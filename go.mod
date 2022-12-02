@@ -1,4 +1,4 @@
-module klaudiusz-czapla/my-cloud-home-go
+module github.com/klaudiusz-czapla/my-cloud-home-go
 
 go 1.19
 

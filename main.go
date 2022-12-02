@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
+
+	mch "github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 )
 
 func main() {
@@ -14,25 +14,20 @@ func main() {
 
 	resp, err := http.Get("https://config.mycloud.com/config/v1/config")
 	if err != nil {
-		log.Println(err.Error())
-		os.Exit(1)
+		log.Fatalln(err.Error())
 	}
 
 	respBytesArr, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err.Error())
 	}
 
-	respStr = string(respBytesArr)
-	err := json.Unmarshal(respBytesArr, data)
+	var config mch.Config
+	err = json.Unmarshal(respBytesArr, &config)
 	if err != nil {
-		fmt.Println(err.Error())
-		//json: Unmarshal(non-pointer main.Request)
+		log.Fatalln(err.Error())
 	}
 
-	err := json.Unmarshal([]byte(s), &data)
-	if err != nil {
-		fmt.Println(err.Error())
-		//invalid character '\'' looking for beginning of object key string
-	}
+	log.Println("Configuration retrieved with success..")
+
 }
