@@ -1,0 +1,32 @@
+{
+	"info": {
+		"_postman_id": "ea709111-9458-40c8-9339-b9733da28d9f",
+		"name": "MyCloudHome",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6173864"
+	},
+	"item": [
+		{
+			"name": "Config",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://config.mycloud.com/config/v1/config",
+					"protocol": "https",
+					"host": [
+						"config",
+						"mycloud",
+						"com"
+					],
+					"path": [
+						"config",
+						"v1",
+						"config"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
