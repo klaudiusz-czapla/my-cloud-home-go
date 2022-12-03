@@ -1,29 +1,36 @@
 package main
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"fmt"
 	"log"
-	"net/http"
 
 	mch "github.com/klaudiusz-czapla/my-cloud-home-go/mch"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 func main() {
+
+	command := &cobra.Command{
+		Run: func(c *cobra.Command, args []string) {
+			fmt.Println(viper.GetString("Flag"))
+		},
+	}
+
 	log.Println("Starting My Cloud Home client app..")
 
-	resp, err := http.Get("https://config.mycloud.com/config/v1/config")
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
+	viper.SetConfigType(".ini")
+	viper.SetConfigName("config")
 
-	respBytesArr, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatalln(err.Error())
-	}
+	clientId := viper.Get("clientid").(string)
+	clientSecret := viper.Get("clientsecret").(string)
 
-	var config mch.Config
-	err = json.Unmarshal(respBytesArr, &config)
+	log.Println("Configuration has been loaded..")
+
+	var config *mch.MchConfig
+	config, err := mch.GetConfiguration()
+	log.Println(config.Data.ComponentMapUntyped)
+
 	if err != nil {
 		log.Fatalln(err.Error())
 	}

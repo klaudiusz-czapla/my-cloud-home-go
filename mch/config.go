@@ -1,9 +1,17 @@
 package mch
 
-type Config struct {
+import (
+	"encoding/json"
+	"errors"
+	"io/ioutil"
+	"net/http"
+)
+
+type MchConfig struct {
 	Data struct {
-		ConfigurationID string `json:"configurationId"`
-		ComponentMap    struct {
+		ConfigurationID     string                            `json:"configurationId"`
+		ComponentMapUntyped map[string]map[string]interface{} `json:"componentMap"`
+		ComponentMap        struct {
 			ComWdcAppmanager struct {
 				AppstoreURL string `json:"appstore.url"`
 			} `json:"com.wdc.appmanager"`
@@ -22,7 +30,8 @@ type Config struct {
 				StartLogging         string `json:"start_logging"`
 				WddirectLog          int    `json:"wddirect_log"`
 			} `json:"com.wd.analytics"`
-			CloudServiceUrls struct {
+			CloudServiceUrlsUntyped map[string]interface{} `json:"cloud.service.urls"`
+			CloudServiceUrls        struct {
 				ServiceAccountLoginURL                string `json:"service.account.login.url"`
 				ServiceAccountRedirectURL             string `json:"service.account.redirect.url"`
 				ServiceDiscoveryHelpURL               string `json:"service.discovery.help.url"`
@@ -161,4 +170,41 @@ type Config struct {
 			} `json:"com.sandisk.ixpandcharger"`
 		} `json:"componentMap"`
 	} `json:"data"`
+}
+
+const (
+	configURL = "https://config.mycloud.com/config/v1/config"
+)
+
+func GetConfiguration() (*MchConfig, error) {
+	resp, err := http.Get(configURL)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respBytesArr, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var config MchConfig
+	err = json.Unmarshal(respBytesArr, &config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &config, nil
+}
+
+func (c *MchConfig) GetUrl(name string) (string, error) {
+	if val, ok := c.Data.ComponentMap.CloudServiceUrlsUntyped[name]; ok {
+		if s, ok := val.(string); ok {
+			return s, nil
+		}
+
+		return "", errors.New("Url with given name is not a string")
+	}
+	// todo
+	return "", errors.New("Url were not found")
 }
