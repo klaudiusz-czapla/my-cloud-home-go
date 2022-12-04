@@ -3,6 +3,7 @@ package mch
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 )
@@ -203,8 +204,8 @@ func (c *MchConfig) GetUrl(name string) (string, error) {
 			return s, nil
 		}
 
-		return "", errors.New("Url with given name is not a string")
+		return "", errors.New(fmt.Sprintf("Received cloud service url with name '%s' is not a string", name))
 	}
-	// todo
-	return "", errors.New("Url were not found")
+
+	return "", errors.New(fmt.Sprintf("Cloud service url with name '%s' were not found", name))
 }
