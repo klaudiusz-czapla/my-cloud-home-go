@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -19,8 +22,8 @@ var rootCmd = &cobra.Command{
 
 var tokenCmd = &cobra.Command{
 	Use:   "token",
-	Short: "",
-	Long:  "",
+	Short: "Get the user token",
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 
 	},
@@ -37,13 +40,30 @@ var versionCmd = &cobra.Command{
 
 func main() {
 
+	path := os.Args[0]
+	absPath, _ := filepath.Abs(path)
+
+	log.Print("App has been started..")
+	log.Printf("Started in %s", absPath)
+
 	rootCmd.PersistentFlags().StringP("username", "u", "", "WD My Cloud Home user name")
 	rootCmd.PersistentFlags().StringP("password", "p", "", "WD My Cloud Home user password")
-	rootCmd.MarkFlagsRequiredTogether("username", "password")
+	rootCmd.PersistentFlags().StringP("clientid", "c", "", "Client Id")
+	rootCmd.PersistentFlags().StringP("clientsecret", "s", "", "Client Secret")
+
+	viper.SetConfigName("mch")
+	viper.SetConfigType("ini")
+	viper.AddConfigPath(path)
+	viper.AddConfigPath("~/.mch")
+	viper.ReadInConfig()
+
+	viper.SetEnvPrefix("mch")
+	viper.AutomaticEnv()
 
 	viper.BindPFlag("username", rootCmd.PersistentFlags().Lookup("username"))
 	viper.BindPFlag("password", rootCmd.PersistentFlags().Lookup("password"))
-	viper.BindPFlag("token", rootCmd.PersistentFlags().Lookup("token"))
+	viper.BindPFlag("clientid", rootCmd.PersistentFlags().Lookup("clientid"))
+	viper.BindPFlag("clientsecret", rootCmd.PersistentFlags().Lookup("clientsecret"))
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(tokenCmd)

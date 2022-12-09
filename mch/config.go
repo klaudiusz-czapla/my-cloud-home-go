@@ -198,7 +198,7 @@ func GetConfiguration() (*MchConfig, error) {
 	return &config, nil
 }
 
-func (c *MchConfig) GetUrl(name string) (string, error) {
+func (c *MchConfig) GetCloudServiceUrl(name string) (string, error) {
 	if val, ok := c.Data.ComponentMap.CloudServiceUrlsUntyped[name]; ok {
 		if s, ok := val.(string); ok {
 			return s, nil

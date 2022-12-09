@@ -15,3 +15,5 @@
 # vendor/
 
 my-cloud-home-go
+mch.ini
+./Postman/*.json
