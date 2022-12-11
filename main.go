@@ -26,15 +26,15 @@ var rootCmd = &cobra.Command{
 	Use:   "my-cloud-home-go",
 	Short: "My Cloud Home CLI application",
 	Long:  `my-cloud-home-go is meant for managing My Cloud Home devices`,
-	PreRun: func(cmd *cobra.Command, args []string) {
-		print("asd")
-	},
 }
 
 var tokenCmd = &cobra.Command{
 	Use:   "token",
 	Short: "Get the user token",
 	Long:  ``,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		viper.Debug()
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 
 	},
@@ -59,7 +59,7 @@ func main() {
 			if mch.FileExists(configPath) {
 				configFileExt := filepath.Ext(configPath)
 
-				if configFileExt == "ini" {
+				if configFileExt == ".ini" {
 					viper.AddConfigPath(configPath)
 					viper.ReadInConfig()
 				}
@@ -70,7 +70,7 @@ func main() {
 	log.Print("App has been started..")
 	log.Printf("Started from the path: %s", absPath)
 
-	rootCmd.Flags().StringVar(&configPath, "configPath", "", "Configuration file path.")
+	rootCmd.PersistentFlags().StringVar(&configPath, "configPath", "", "Configuration file path.")
 
 	tokenCmd.PersistentFlags().StringVar(&username, "username", "", "WD My Cloud Home user name.")
 	tokenCmd.PersistentFlags().StringVar(&password, "password", "", "WD My Cloud Home user password")
