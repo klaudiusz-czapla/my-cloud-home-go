@@ -10,6 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
+            "args": ["token", "--username='ASD'", "--configPath", "/home/klaudiuszc/hdd/Projects/my-cloud-home-go/mch.test.ini"]
         }
     ]
 }

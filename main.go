@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"path/filepath"
 
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -14,10 +14,21 @@ const (
 	version = "0.0.1"
 )
 
+var (
+	configPath   string
+	username     string
+	password     string
+	clientId     string
+	clientSecret string
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "my-cloud-home-go",
 	Short: "My Cloud Home CLI application",
 	Long:  `my-cloud-home-go is meant for managing My Cloud Home devices`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		print("asd")
+	},
 }
 
 var tokenCmd = &cobra.Command{
@@ -40,32 +51,45 @@ var versionCmd = &cobra.Command{
 
 func main() {
 
-	path := os.Args[0]
-	absPath, _ := filepath.Abs(path)
+	//path := os.Args[0]
+	absPath, _ := filepath.Abs(".")
+
+	cobra.OnInitialize(func() {
+		if configPath != "" {
+			if mch.FileExists(configPath) {
+				configFileExt := filepath.Ext(configPath)
+
+				if configFileExt == "ini" {
+					viper.AddConfigPath(configPath)
+					viper.ReadInConfig()
+				}
+			}
+		}
+	})
 
 	log.Print("App has been started..")
-	log.Printf("Started in %s", absPath)
+	log.Printf("Started from the path: %s", absPath)
 
-	rootCmd.PersistentFlags().StringP("username", "u", "", "WD My Cloud Home user name")
-	rootCmd.PersistentFlags().StringP("password", "p", "", "WD My Cloud Home user password")
-	rootCmd.PersistentFlags().StringP("clientid", "c", "", "Client Id")
-	rootCmd.PersistentFlags().StringP("clientsecret", "s", "", "Client Secret")
+	rootCmd.Flags().StringVar(&configPath, "configPath", "", "Configuration file path.")
+
+	tokenCmd.PersistentFlags().StringVar(&username, "username", "", "WD My Cloud Home user name.")
+	tokenCmd.PersistentFlags().StringVar(&password, "password", "", "WD My Cloud Home user password")
+	tokenCmd.PersistentFlags().StringVar(&clientId, "clientId", "", "Client Id")
+	tokenCmd.PersistentFlags().StringVar(&clientSecret, "clientSecret", "", "Client Secret")
 
 	viper.SetConfigName("mch")
 	viper.SetConfigType("ini")
-	viper.AddConfigPath(path)
+	viper.AddConfigPath(absPath)
 	viper.AddConfigPath("~/.mch")
 	viper.ReadInConfig()
 
 	viper.SetEnvPrefix("mch")
 	viper.AutomaticEnv()
 
-	viper.BindPFlag("username", rootCmd.PersistentFlags().Lookup("username"))
-	viper.BindPFlag("password", rootCmd.PersistentFlags().Lookup("password"))
-	viper.BindPFlag("clientid", rootCmd.PersistentFlags().Lookup("clientid"))
-	viper.BindPFlag("clientsecret", rootCmd.PersistentFlags().Lookup("clientsecret"))
-
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(tokenCmd)
+
+	viper.Debug()
+
 	rootCmd.Execute()
 }

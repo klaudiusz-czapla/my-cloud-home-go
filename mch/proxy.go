@@ -40,9 +40,7 @@ func GetToken(clientId string, clientSecret string, username string, password st
 		return config, nil, err
 	}
 
-	httpClient := &http.Client{}
-
-	resp, err := httpClient.Post(
+	resp, err := http.Post(
 		authUrl,
 		"application/json",
 		bytes.NewBuffer(data),

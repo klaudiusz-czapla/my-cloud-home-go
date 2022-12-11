@@ -16,4 +16,5 @@
 
 my-cloud-home-go
 mch.ini
+mch.*.ini
 ./Postman/*.json
