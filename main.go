@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"path/filepath"
+	"strings"
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 	"github.com/spf13/cobra"
@@ -36,7 +37,12 @@ var tokenCmd = &cobra.Command{
 		viper.Debug()
 	},
 	Run: func(cmd *cobra.Command, args []string) {
+		_, token, err := mch.GetToken(clientId, clientSecret, username, password)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
 
+		fmt.Println(token)
 	},
 }
 
@@ -61,7 +67,10 @@ func main() {
 
 				if configFileExt == ".ini" {
 					viper.AddConfigPath(configPath)
-					viper.ReadInConfig()
+					var err = viper.ReadInConfig()
+					if err != nil {
+						log.Fatal(err.Error())
+					}
 				}
 			}
 		}
@@ -71,25 +80,38 @@ func main() {
 	log.Printf("Started from the path: %s", absPath)
 
 	rootCmd.PersistentFlags().StringVar(&configPath, "configPath", "", "Configuration file path.")
+	viper.BindPFlag("configPath", rootCmd.PersistentFlags().Lookup("configPath"))
 
-	tokenCmd.PersistentFlags().StringVar(&username, "username", "", "WD My Cloud Home user name.")
-	tokenCmd.PersistentFlags().StringVar(&password, "password", "", "WD My Cloud Home user password")
-	tokenCmd.PersistentFlags().StringVar(&clientId, "clientId", "", "Client Id")
-	tokenCmd.PersistentFlags().StringVar(&clientSecret, "clientSecret", "", "Client Secret")
+	tokenCmd.Flags().StringVar(&username, "username", "", "WD My Cloud Home user name.")
+	tokenCmd.Flags().StringVar(&password, "password", "", "WD My Cloud Home user password")
+	tokenCmd.Flags().StringVar(&clientId, "clientId", "", "Client Id")
+	tokenCmd.Flags().StringVar(&clientSecret, "clientSecret", "", "Client Secret")
+	viper.BindPFlag("username", tokenCmd.Flags().Lookup("username"))
+	viper.BindPFlag("password", tokenCmd.Flags().Lookup("password"))
+	viper.BindPFlag("clientId", tokenCmd.Flags().Lookup("clientId"))
+	viper.BindPFlag("clientSecret", tokenCmd.Flags().Lookup("clientSecret"))
 
-	viper.SetConfigName("mch")
-	viper.SetConfigType("ini")
 	viper.AddConfigPath(absPath)
-	viper.AddConfigPath("~/.mch")
-	viper.ReadInConfig()
-
+	viper.SetConfigType("ini")
+	viper.SetConfigName("mch")
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	viper.SetEnvPrefix("mch")
 	viper.AutomaticEnv()
 
+	// debug mode
+	if viper.GetString(strings.ToUpper("clientId")) == "" {
+		log.Fatal("ClientId has empty value")
+	}
+
+	// debug mode
+	if viper.GetString(strings.ToUpper("clientSecret")) == "" {
+		log.Fatal("ClientSecret has empty value")
+	}
+
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(tokenCmd)
-
-	viper.Debug()
-
 	rootCmd.Execute()
 }
