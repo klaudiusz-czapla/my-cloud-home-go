@@ -15,6 +15,6 @@
 # vendor/
 
 my-cloud-home-go
-mch.ini
-mch.*.ini
+*.ini
 ./Postman/*.json
+__debug_bin
