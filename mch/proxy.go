@@ -21,7 +21,7 @@ func GetToken(clientId string, clientSecret string, username string, password st
 		return nil, nil, err
 	}
 
-	authUrl := config.Data.ComponentMap.CloudServiceUrls.ServiceAuth0URL
+	authUrl := config.GetString("cloud.service.urls", "service.auth0.url")
 	authUrl = fmt.Sprintf("%s/oauth/token", authUrl)
 
 	req := map[string]string{
@@ -60,7 +60,7 @@ func GetToken(clientId string, clientSecret string, username string, password st
 	log.Print(content)
 
 	var token MchToken
-	err = json.Unmarshal(respBytesArr, &config)
+	err = json.Unmarshal(respBytesArr, &token)
 	if err != nil {
 		return config, nil, err
 	}

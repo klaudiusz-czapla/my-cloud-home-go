@@ -30,10 +30,6 @@ var (
 	configFileName    string = defaultConfigFileName
 	defaultConfigPath string = absPath
 	configPath        string = defaultConfigPath
-	username          string
-	password          string
-	clientId          string
-	clientSecret      string
 )
 
 var rootCmd = &cobra.Command{
@@ -47,16 +43,14 @@ var tokenCmd = &cobra.Command{
 	Short: "Get the user token",
 	Long:  ``,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		mch.BindFlags(cmd, v)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		un := viper.GetString("username")
-		_, token, err := mch.GetToken(clientId, clientSecret, un, password)
+		_, token, err := mch.GetToken(v.GetString("clientId"), v.GetString("clientSecret"), v.GetString("username"), v.GetString("password"))
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 
-		fmt.Println(token)
+		log.Println(token)
 	},
 }
 
@@ -75,8 +69,8 @@ func addJsonFile(filePath string, fileName string) {
 	if in != "" {
 		if mch.FileExists(in) {
 			v.AddConfigPath(filePath)
-			v.SetConfigType("json")
-			v.SetConfigName(fileName)
+			v.SetConfigType(ext)
+			v.SetConfigFile(in)
 			var err = v.ReadInConfig()
 			if err != nil {
 				log.Fatal(err.Error())
@@ -99,15 +93,6 @@ func main() {
 	v.BindPFlag("configFileName", rootCmd.PersistentFlags().Lookup("configFileName"))
 	v.BindPFlag("configPath", rootCmd.PersistentFlags().Lookup("configPath"))
 
-	tokenCmd.Flags().StringVar(&username, "username", "", "WD My Cloud Home user name.")
-	tokenCmd.Flags().StringVar(&password, "password", "", "WD My Cloud Home user password")
-	tokenCmd.Flags().StringVar(&clientId, "clientId", "", "Client Id")
-	tokenCmd.Flags().StringVar(&clientSecret, "clientSecret", "", "Client Secret")
-	v.BindPFlag("username", tokenCmd.Flags().Lookup("username"))
-	v.BindPFlag("password", tokenCmd.Flags().Lookup("password"))
-	v.BindPFlag("clientId", tokenCmd.Flags().Lookup("clientId"))
-	v.BindPFlag("clientSecret", tokenCmd.Flags().Lookup("clientSecret"))
-
 	if cp := v.GetString("configPath"); cp != "" {
 		if cf := v.GetString("configFileName"); cf != "" {
 			addJsonFile(cp, cf)
@@ -119,7 +104,9 @@ func main() {
 	v.AutomaticEnv()
 
 	cobra.OnInitialize(func() {
-		addJsonFile(configPath, configFileName)
+		if configPath != defaultConfigPath || configFileName != defaultConfigFileName {
+			addJsonFile(configPath, configFileName)
+		}
 	})
 
 	rootCmd.AddCommand(versionCmd)

@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["token", "--username=asd", "--configPath=/home/klaudiuszc/hdd/Projects/my-cloud-home-go", "--configFileName=config.test"]
+            "args": ["token", "--configPath=/home/klaudiuszc/hdd/Projects/my-cloud-home-go", "--configFileName=config"]
         }
     ]
 }
