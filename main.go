@@ -81,14 +81,15 @@ func addJsonFile(filePath string, fileName string) {
 			if err != nil {
 				log.Fatal(err.Error())
 			}
+			log.Printf("configuration has been retrieved from file: %s", in)
 		}
 	}
 }
 
 func main() {
 
-	log.Print("App has been started..")
-	log.Printf("Started from the path: %s", absPath)
+	log.Print("app has been started..")
+	log.Printf("started from the path: %s", absPath)
 
 	v.SetDefault("configFileName", defaultConfigFileName)
 	v.SetDefault("configPath", defaultConfigPath)

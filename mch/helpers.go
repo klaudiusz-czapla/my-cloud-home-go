@@ -30,16 +30,16 @@ func BindFlags(cmd *cobra.Command, v *viper.Viper) {
 	})
 }
 
-func If[T any](cond bool, vtrue, vfalse T) T {
+func If[T any](cond bool, a, b T) T {
 	if cond {
-		return vtrue
+		return a
 	}
-	return vfalse
+	return b
 }
 
-func IfFn[T any](fn func() bool, vtrue, vfalse T) T {
+func IfFn[T any](fn func() bool, a, b T) T {
 	if fn() {
-		return vtrue
+		return a
 	}
-	return vfalse
+	return b
 }

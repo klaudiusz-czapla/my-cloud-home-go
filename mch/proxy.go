@@ -51,7 +51,7 @@ func GetToken(clientId string, clientSecret string, username string, password st
 	defer resp.Body.Close()
 
 	if !(resp.StatusCode >= 200 && resp.StatusCode <= 299) {
-		return config, nil, fmt.Errorf("Status code %v has been received from %s", resp.StatusCode, resp.Request.URL)
+		return config, nil, fmt.Errorf("status code %v has been received from %s", resp.StatusCode, resp.Request.URL)
 	}
 
 	respBytesArr, _ := io.ReadAll(resp.Body)
