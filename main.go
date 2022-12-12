@@ -9,7 +9,6 @@ import (
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -48,18 +47,11 @@ var tokenCmd = &cobra.Command{
 	Short: "Get the user token",
 	Long:  ``,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		v.Debug()
+		mch.BindFlags(cmd, v)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		c := v.GetStringMapString("default")
-		ci := v.GetString("clientId")
-		cs := v.GetString("clientSecret")
-		un := v.GetString("username")
-		pwd := v.GetString("password")
-
-		print(c)
-
-		_, token, err := mch.GetToken(ci, cs, un, pwd)
+		un := viper.GetString("username")
+		_, token, err := mch.GetToken(clientId, clientSecret, un, password)
 		if err != nil {
 			log.Fatal(err.Error())
 		}
@@ -77,41 +69,20 @@ var versionCmd = &cobra.Command{
 	},
 }
 
-func addConfig(filePath string, fileName string) {
-	const ext = "ini"
+func addJsonFile(filePath string, fileName string) {
+	const ext = "json"
 	in := filePath + string(os.PathSeparator) + fileName + "." + ext
 	if in != "" {
 		if mch.FileExists(in) {
-			configFileExt := filepath.Ext(in)
-
-			if configFileExt == ".ini" {
-				v.AddConfigPath(filePath)
-				v.SetConfigType("ini")
-				//v.SetConfigName("config")
-				v.SetConfigName(fileName)
-				var err = v.ReadInConfig()
-				if err != nil {
-					log.Fatal(err.Error())
-				}
-
-				v.Debug()
+			v.AddConfigPath(filePath)
+			v.SetConfigType("json")
+			v.SetConfigName(fileName)
+			var err = v.ReadInConfig()
+			if err != nil {
+				log.Fatal(err.Error())
 			}
 		}
 	}
-}
-
-// Bind each cobra flag to its associated viper configuration (config file and environment variable)
-func bindFlags(cmd *cobra.Command, v *viper.Viper) {
-	cmd.Flags().VisitAll(func(f *pflag.Flag) {
-		// Determine the naming convention of the flags when represented in the config file
-		configName := f.Name
-
-		// Apply the viper config value to the flag when the flag is not set and viper has a value
-		if !f.Changed && v.IsSet(configName) {
-			val := v.Get(configName)
-			cmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
-		}
-	})
 }
 
 func main() {
@@ -138,7 +109,7 @@ func main() {
 
 	if cp := v.GetString("configPath"); cp != "" {
 		if cf := v.GetString("configFileName"); cf != "" {
-			addConfig(cp, cf)
+			addJsonFile(cp, cf)
 		}
 	}
 
@@ -147,9 +118,7 @@ func main() {
 	v.AutomaticEnv()
 
 	cobra.OnInitialize(func() {
-		addConfig(configPath, configFileName)
-		bindFlags(rootCmd, v)
-		bindFlags(tokenCmd, v)
+		addJsonFile(configPath, configFileName)
 	})
 
 	rootCmd.AddCommand(versionCmd)
