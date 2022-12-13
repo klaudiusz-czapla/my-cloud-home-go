@@ -14,8 +14,10 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+bin/
+__debug_bin
+
 my-cloud-home-go
 config.json
 config.*.json
 ./Postman/*.json
-__debug_bin

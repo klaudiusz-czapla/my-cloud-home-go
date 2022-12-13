@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["token", "--configPath=/home/klaudiuszc/hdd/Projects/my-cloud-home-go", "--configFileName=config"]
+            "args": ["token", "--propertyName=id_token", "--decode-jwt"]
         }
     ]
 }
