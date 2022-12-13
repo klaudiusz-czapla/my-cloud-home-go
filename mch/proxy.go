@@ -4,21 +4,27 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
 )
 
 type MchToken struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
 	IdToken      string `json:"id_token"`
+	Scope        string `json:"scope"`
+	RefreshToken string `json:"refresh_token"`
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int32  `json:"expires_in"`
 }
 
-func GetToken(clientId string, clientSecret string, username string, password string) (*MchConfig, *MchToken, error) {
+type MchSession struct {
+	Config *MchConfig
+	Token  *MchToken
+}
+
+func Login(clientId string, clientSecret string, username string, password string) (*MchSession, error) {
 	config, err := GetConfiguration()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	authUrl := config.GetString("cloud.service.urls", "service.auth0.url")
@@ -37,33 +43,29 @@ func GetToken(clientId string, clientSecret string, username string, password st
 
 	data, err := json.Marshal(req)
 	if err != nil {
-		return config, nil, err
+		return &MchSession{Config: config}, err
 	}
 
-	resp, err := http.Post(
+	res, err := http.Post(
 		authUrl,
 		"application/json",
 		bytes.NewBuffer(data),
 	)
 	if err != nil {
-		return config, nil, err
+		return &MchSession{Config: config}, err
 	}
-	defer resp.Body.Close()
+	defer res.Body.Close()
 
-	if !(resp.StatusCode >= 200 && resp.StatusCode <= 299) {
-		return config, nil, fmt.Errorf("status code %v has been received from %s", resp.StatusCode, resp.Request.URL)
+	if !(res.StatusCode >= 200 && res.StatusCode <= 299) {
+		return &MchSession{Config: config}, fmt.Errorf("status code %v has been received from %s", res.StatusCode, res.Request.URL)
 	}
-
-	respBytesArr, _ := io.ReadAll(resp.Body)
-	content := string(respBytesArr)
-
-	log.Print(content)
 
 	var token MchToken
-	err = json.Unmarshal(respBytesArr, &token)
+	err = json.NewDecoder(res.Body).Decode(&token)
+
 	if err != nil {
-		return config, nil, err
+		return &MchSession{Config: config}, err
 	}
 
-	return config, &token, nil
+	return &MchSession{Config: config, Token: &token}, nil
 }

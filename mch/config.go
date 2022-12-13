@@ -2,7 +2,6 @@ package mch
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -18,19 +17,15 @@ const (
 )
 
 func GetConfiguration() (*MchConfig, error) {
-	resp, err := http.Get(configURL)
+	res, err := http.Get(configURL)
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
-	respBytesArr, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
-	}
+	defer res.Body.Close()
 
 	var config MchConfig
-	err = json.Unmarshal(respBytesArr, &config)
+	err = json.NewDecoder(res.Body).Decode(&config)
+
 	if err != nil {
 		return nil, err
 	}

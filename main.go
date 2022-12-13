@@ -1,11 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 	"github.com/spf13/cobra"
@@ -27,9 +27,12 @@ const (
 )
 
 var (
-	configFileName    string = defaultConfigFileName
 	defaultConfigPath string = absPath
-	configPath        string = defaultConfigPath
+)
+
+var (
+	configFileName string = defaultConfigFileName
+	configPath     string = defaultConfigPath
 )
 
 var rootCmd = &cobra.Command{
@@ -38,19 +41,31 @@ var rootCmd = &cobra.Command{
 	Long:  `my-cloud-home-go is meant for managing My Cloud Home devices`,
 }
 
-var tokenCmd = &cobra.Command{
-	Use:   "token",
-	Short: "Get the user token",
+var configCmd = &cobra.Command{
+	Use:   "config",
+	Short: "Retrieves configuration in json format",
 	Long:  ``,
-	PreRun: func(cmd *cobra.Command, args []string) {
-	},
 	Run: func(cmd *cobra.Command, args []string) {
-		_, token, err := mch.GetToken(v.GetString("clientId"), v.GetString("clientSecret"), v.GetString("username"), v.GetString("password"))
+		c, err := mch.GetConfiguration()
 		if err != nil {
 			log.Fatal(err.Error())
 		}
 
-		log.Println(token)
+		json.NewEncoder(log.Writer()).Encode(c)
+	},
+}
+
+var tokenCmd = &cobra.Command{
+	Use:   "token",
+	Short: "Get the user token",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		session, err := mch.Login(v.GetString("clientId"), v.GetString("clientSecret"), v.GetString("username"), v.GetString("password"))
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+
+		json.NewEncoder(log.Writer()).Encode(session.Token)
 	},
 }
 
@@ -99,10 +114,6 @@ func main() {
 		}
 	}
 
-	v.SetEnvPrefix("mch")
-	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
-	v.AutomaticEnv()
-
 	cobra.OnInitialize(func() {
 		if configPath != defaultConfigPath || configFileName != defaultConfigFileName {
 			addJsonFile(configPath, configFileName)
@@ -110,6 +121,7 @@ func main() {
 	})
 
 	rootCmd.AddCommand(versionCmd)
+	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(tokenCmd)
 	rootCmd.Execute()
 }
