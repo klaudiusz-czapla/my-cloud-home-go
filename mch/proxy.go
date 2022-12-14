@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 )
 
@@ -46,7 +48,8 @@ func Login(clientId string, clientSecret string, username string, password strin
 		return &MchSession{Config: config}, err
 	}
 
-	res, err := http.Post(
+	httpClient := http.Client{}
+	res, err := httpClient.Post(
 		authUrl,
 		"application/json",
 		bytes.NewBuffer(data),
@@ -57,7 +60,7 @@ func Login(clientId string, clientSecret string, username string, password strin
 	defer res.Body.Close()
 
 	if !(res.StatusCode >= 200 && res.StatusCode <= 299) {
-		return &MchSession{Config: config}, fmt.Errorf("status code %v has been received from %s", res.StatusCode, res.Request.URL)
+		return &MchSession{Config: config}, fmt.Errorf("status code %d has been received from %s", res.StatusCode, res.Request.URL)
 	}
 
 	var token MchToken
@@ -68,4 +71,40 @@ func Login(clientId string, clientSecret string, username string, password strin
 	}
 
 	return &MchSession{Config: config, Token: &token}, nil
+}
+
+func Relogin(clientId string, clientSecret string, session *MchSession) error {
+
+	req := map[string]string{
+		"audience":      "mycloud.com",
+		"client_id":     clientId,
+		"client_secret": clientSecret,
+		"grant_type":    "refresh_token",
+		"refresh_token": session.Token.RefreshToken,
+	}
+
+	data, err := json.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	httpClient := http.Client{}
+	res, err := httpClient.Post(
+		fmt.Sprintf("%s/oauth/token", session.Config.GetString("cloud.service.urls", "service.auth0.url")),
+		"application/json",
+		bytes.NewBuffer(data),
+	)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	if !(res.StatusCode >= 200 && res.StatusCode <= 299) {
+		return fmt.Errorf("status code %d has been received from %s", res.StatusCode, res.Request.URL)
+	}
+
+	b, _ := io.ReadAll(res.Body)
+	log.Print(string(b))
+
+	return nil
 }

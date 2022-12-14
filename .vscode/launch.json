@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["token", "--propertyName=id_token", "--decode-jwt"]
+            "args": ["token", "-r"]
         }
     ]
 }

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 
@@ -22,25 +21,21 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 				log.Fatal(err.Error())
 			}
 
-			propName := v.GetString("propertyName")
-			if propName == "" {
-				json.NewEncoder(os.Stdout).Encode(session.Token)
-				return
-			}
+			json.NewEncoder(os.Stdout).Encode(session.Token)
 
-			switch propName {
-			case "id_token":
-				fmt.Print(args)
-			case "refresh_token":
-				fmt.Print(args)
-			default:
-				return
+			// TODO: move it to separate command
+			// keep possibility to persist token (save it to the file for later usage)
+			if v.GetBool("refresh") {
+				err = mch.Relogin(v.GetString("clientId"), v.GetString("clientSecret"), session)
+				if err != nil {
+					log.Fatal(err.Error())
+				}
 			}
 		},
 	}
 
-	tokenCmd.Flags().String("propertyName", "", "Json property name meant to be extracted.")
-	v.BindPFlag("propertyName", tokenCmd.Flags().Lookup("propertyName"))
+	tokenCmd.Flags().BoolP("refresh", "r", false, "Refresh the token.")
+	v.BindPFlag("refresh", tokenCmd.Flags().Lookup("refresh"))
 
 	return tokenCmd
 }
