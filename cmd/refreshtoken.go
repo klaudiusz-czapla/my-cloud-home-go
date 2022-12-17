@@ -3,7 +3,6 @@ package cmd
 import (
 	"encoding/json"
 	"log"
-	"net/http"
 	"strings"
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
@@ -22,18 +21,12 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 			var clientSecret = v.GetString("clientSecret")
 			var tokenString = v.GetString("token")
 
-			config, err := mch.GetConfiguration()
+			var token mch.MchToken
+			err := json.NewDecoder(strings.NewReader(tokenString)).Decode(&token)
+			proxy, err := mch.NewProxy(&token)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
-
-			var proxy = mch.MchProxy{}
-			proxy.HttpClient = &http.Client{}
-			proxy.MchSession = &mch.MchSession{}
-			proxy.Config = config
-			var token mch.MchToken
-			err = json.NewDecoder(strings.NewReader(tokenString)).Decode(&token)
-			proxy.MchSession.Token = &token
 
 			err = proxy.Relogin(clientId, clientSecret)
 			if err != nil {

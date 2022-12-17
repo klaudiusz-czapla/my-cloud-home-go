@@ -11,13 +11,9 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-type MchToken struct {
-	IdToken      string `json:"id_token"`
-	Scope        string `json:"scope"`
-	RefreshToken string `json:"refresh_token"`
-	AccessToken  string `json:"access_token"`
-	TokenType    string `json:"token_type"`
-	ExpiresIn    int32  `json:"expires_in"`
+type MchProxy struct {
+	HttpClient *http.Client
+	Session    *MchSession
 }
 
 type MchSession struct {
@@ -25,9 +21,13 @@ type MchSession struct {
 	Token  *MchToken
 }
 
-type MchProxy struct {
-	HttpClient *http.Client
-	*MchSession
+type MchToken struct {
+	IdToken      string `json:"id_token"`
+	Scope        string `json:"scope"`
+	RefreshToken string `json:"refresh_token"`
+	AccessToken  string `json:"access_token"`
+	TokenType    string `json:"token_type"`
+	ExpiresIn    int32  `json:"expires_in"`
 }
 
 func Login(clientId string, clientSecret string, username string, password string) (*MchProxy, error) {
@@ -52,7 +52,7 @@ func Login(clientId string, clientSecret string, username string, password strin
 
 	data, err := json.Marshal(req)
 	if err != nil {
-		return &MchProxy{MchSession: &MchSession{Config: config}}, err
+		return &MchProxy{Session: &MchSession{Config: config}}, err
 	}
 
 	httpClient := http.Client{}
@@ -62,33 +62,51 @@ func Login(clientId string, clientSecret string, username string, password strin
 		bytes.NewBuffer(data),
 	)
 	if err != nil {
-		return &MchProxy{MchSession: &MchSession{Config: config}}, err
+		return &MchProxy{Session: &MchSession{Config: config}}, err
 	}
 	defer res.Body.Close()
 
 	if !(res.StatusCode >= 200 && res.StatusCode <= 299) {
-		return &MchProxy{MchSession: &MchSession{Config: config}}, fmt.Errorf("status code %d has been received from %s", res.StatusCode, res.Request.URL)
+		return &MchProxy{Session: &MchSession{Config: config}}, fmt.Errorf("status code %d has been received from %s", res.StatusCode, res.Request.URL)
 	}
 
 	var token MchToken
 	err = json.NewDecoder(res.Body).Decode(&token)
 
 	if err != nil {
-		return &MchProxy{MchSession: &MchSession{Config: config}}, err
+		return &MchProxy{Session: &MchSession{Config: config}}, err
 	}
 
 	return &MchProxy{
 		HttpClient: &httpClient,
-		MchSession: &MchSession{
+		Session: &MchSession{
 			Config: config,
 			Token:  &token,
 		},
 	}, nil
 }
 
+func NewProxy(token *MchToken) (*MchProxy, error) {
+	config, err := GetConfiguration()
+	if err != nil {
+		return nil, err
+	}
+
+	return NewProxyFromConfig(config, token), nil
+}
+
+func NewProxyFromConfig(config *MchConfig, token *MchToken) *MchProxy {
+	var proxy = MchProxy{}
+	proxy.HttpClient = &http.Client{}
+	proxy.Session = &MchSession{}
+	proxy.Session.Config = config
+	proxy.Session.Token = token
+	return &proxy
+}
+
 func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 
-	session := mp.MchSession
+	session := mp.Session
 
 	req := map[string]string{
 		"audience":      "mycloud.com",
@@ -124,7 +142,7 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 	return nil
 }
 
-func decodeToken(tokenString string) *jwt.MapClaims, error {
+func decodeToken(tokenString string) (*jwt.MapClaims, error) {
 	claims := jwt.MapClaims{}
 	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
 
@@ -133,7 +151,7 @@ func decodeToken(tokenString string) *jwt.MapClaims, error {
 	}
 
 	if !token.Valid {
-		return nil, fmt.Error("Passed token is not valid")
+		return nil, fmt.Errorf("Passed token is not valid")
 	}
 
 	return &claims, nil

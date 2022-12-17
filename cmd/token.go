@@ -16,12 +16,12 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 		Short: "Get the user token",
 		Long:  ``,
 		Run: func(cmd *cobra.Command, args []string) {
-			session, err := mch.Login(v.GetString("clientId"), v.GetString("clientSecret"), v.GetString("username"), v.GetString("password"))
+			proxy, err := mch.Login(v.GetString("clientId"), v.GetString("clientSecret"), v.GetString("username"), v.GetString("password"))
 			if err != nil {
 				log.Fatal(err.Error())
 			}
 
-			json.NewEncoder(os.Stdout).Encode(session.Token)
+			json.NewEncoder(os.Stdout).Encode(proxy.Session.Token)
 
 			if v.GetBool("decode-id-token") {
 
