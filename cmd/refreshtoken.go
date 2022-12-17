@@ -15,6 +15,16 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 		Use:   "refresh-token",
 		Short: "Refresh token",
 		Long:  ``,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			//var clientId = v.GetString("clientId")
+			//log.Printf("Client id=%s", clientId)
+
+			//var clientSecret = v.GetString("clientSecret")
+			//log.Printf("Client secret=%s", clientSecret)
+
+			//var token = v.GetString("token")
+			//log.Printf("Token=%s", token)
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 
 			var clientId = v.GetString("clientId")
@@ -23,6 +33,10 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 
 			var token mch.MchToken
 			err := json.NewDecoder(strings.NewReader(tokenString)).Decode(&token)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+
 			proxy, err := mch.NewProxy(&token)
 			if err != nil {
 				log.Fatal(err.Error())

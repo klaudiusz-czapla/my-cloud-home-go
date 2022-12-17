@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 
@@ -23,8 +24,13 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 
 			json.NewEncoder(os.Stdout).Encode(proxy.Session.Token)
 
-			if v.GetBool("decode-id-token") {
+			if v.GetString("as") != "" {
+				os.OpenFile(v.GetString("as"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, os.FileMode(int(0600)))
+			}
 
+			if v.GetBool("decode-id-token") {
+				claims, _ := mch.DecodeToken(proxy.Session.Token.IdToken)
+				fmt.Println(claims)
 			}
 
 			if v.GetBool("decode-refresh-token") {
@@ -33,9 +39,11 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 		},
 	}
 
+	tokenCmd.Flags().String("as", "", "Save token as file")
 	tokenCmd.Flags().Bool("decode-id-token", false, "Decode id token.")
 	tokenCmd.Flags().Bool("decode-access-token", false, "Decode access token.")
 
+	v.BindPFlag("as", tokenCmd.Flags().Lookup("as"))
 	v.BindPFlag("decode-id-token", tokenCmd.Flags().Lookup("decode-id-token"))
 	v.BindPFlag("decode-refresh-token", tokenCmd.Flags().Lookup("decode-refresh-token"))
 

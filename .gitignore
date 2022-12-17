@@ -21,3 +21,5 @@ my-cloud-home-go
 config.json
 config.*.json
 ./Postman/*.json
+token
+token.json

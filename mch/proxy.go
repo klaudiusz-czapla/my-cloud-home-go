@@ -142,7 +142,7 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 	return nil
 }
 
-func decodeToken(tokenString string) (*jwt.MapClaims, error) {
+func DecodeToken(tokenString string) (*jwt.MapClaims, error) {
 	claims := jwt.MapClaims{}
 	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
 
@@ -151,7 +151,7 @@ func decodeToken(tokenString string) (*jwt.MapClaims, error) {
 	}
 
 	if !token.Valid {
-		return nil, fmt.Errorf("Passed token is not valid")
+		return nil, fmt.Errorf("passed token is not valid")
 	}
 
 	return &claims, nil

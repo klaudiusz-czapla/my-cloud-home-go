@@ -10,7 +10,7 @@ Strongly inspired by:
 - https://github.com/mnencia/mchfuse
 - https://github.com/uname-yang/mycloudhome
 
-> Thoughest part was done by authors of those libraries - documentation for WD My Cloud REST Api does not exist anywhere in public. 
+> Thoughest part was done by the authors of libraries mentioned above - as of now documentation for WD My Cloud REST Api does not exist anywhere in public. 
 
 > Security concerns at least for now are totally not in scope of the development(credentials in configuration files). User responsibility is to keep them secret.
 
@@ -20,3 +20,15 @@ Strongly inspired by:
 - https://home.mycloud.com
 - https://github.com/spf13/cobra
 - https://github.com/spf13/viper
+
+## How to (Linux usage assumed)
+- How to get the token and refresh it immediately from command line
+```
+./my-cloud-home-go help
+./my-cloud-home-go help token
+./my-cloud-home-go token --as="./token"
+token=`cat token`
+echo $token
+./my-cloud-home-go help refresh-token
+...
+```
