@@ -24,11 +24,9 @@ Strongly inspired by:
 ## How to (Linux usage assumed)
 - How to get the token and refresh it immediately from command line
 ```
-./my-cloud-home-go help
-./my-cloud-home-go help token
 ./my-cloud-home-go token --as="./token"
 token=`cat token`
 echo $token
 ./my-cloud-home-go help refresh-token
-...
+./my-cloud-home-go refresh-token -t=$(echo $token)
 ```

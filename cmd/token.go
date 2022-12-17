@@ -25,7 +25,15 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 			json.NewEncoder(os.Stdout).Encode(proxy.Session.Token)
 
 			if v.GetString("as") != "" {
-				os.OpenFile(v.GetString("as"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, os.FileMode(int(0600)))
+
+				file, err := os.OpenFile(v.GetString("as"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, os.FileMode(int(0600)))
+				if err != nil {
+					log.Fatal(err.Error())
+				}
+
+				if err := file.Close(); err != nil {
+					log.Fatal(err.Error())
+				}
 			}
 
 			if v.GetBool("decode-id-token") {
