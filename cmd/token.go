@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -13,13 +14,26 @@ import (
 
 func InitTokenCommand(v *viper.Viper) *cobra.Command {
 	var tokenCmd = &cobra.Command{
-		Use:   "token",
-		Short: "Get the user token",
-		Long:  ``,
+		Use:              "token",
+		Short:            "Get the user token",
+		Long:             ``,
+		TraverseChildren: true,
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			log.Print("asd")
+			proxy, err := mch.Login(v.GetString("clientId"), v.GetString("clientSecret"), v.GetString("username"), v.GetString("password"))
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+
+			cmd.SetContext(context.WithValue(cmd.Context(), "proxy", proxy))
+		},
 		PreRun: func(cmd *cobra.Command, args []string) {
 			log.Print("executing 'token' command..")
 		},
 		Run: func(cmd *cobra.Command, args []string) {
+			log.Print("def")
+			vv := cmd.Context().Value("proxy")
+			println(vv)
 			proxy, err := mch.Login(v.GetString("clientId"), v.GetString("clientSecret"), v.GetString("username"), v.GetString("password"))
 			if err != nil {
 				log.Fatal(err.Error())

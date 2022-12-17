@@ -5,7 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Get token and save it to file",
+            "name": "Get token",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["token"]
+        },
+        {
+            "name": "Get token and save it to the file",
             "type": "go",
             "request": "launch",
             "mode": "auto",

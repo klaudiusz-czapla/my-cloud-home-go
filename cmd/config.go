@@ -9,12 +9,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const configCmdName = "config"
+
 var configCmd = &cobra.Command{
-	Use:   "config",
+	Use:   configCmdName,
 	Short: "Retrieves configuration in json format",
 	Long:  ``,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		log.Print("executing 'config' command..")
+		log.Printf("executing '%s' command..", configCmdName)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := mch.GetConfiguration()
@@ -23,6 +25,9 @@ var configCmd = &cobra.Command{
 		}
 
 		json.NewEncoder(os.Stdout).Encode(c)
+	},
+	PostRun: func(cmd *cobra.Command, args []string) {
+		log.Printf("command '%s' has been executed..", configCmdName)
 	},
 }
 

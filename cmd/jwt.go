@@ -16,7 +16,7 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 			log.Print("executing 'jwt' command..")
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Parent().Execute()
+
 		},
 	}
 
