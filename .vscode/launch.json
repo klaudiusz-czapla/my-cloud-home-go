@@ -5,12 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug",
+            "name": "Get token and save it to file",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["token", "-r"]
-        }
+            "args": ["token", "--as=./token"]
+        },
+        {
+            "name": "Decode id token",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["token", "jwt", "--decode-id-token"]
+        },
     ]
 }

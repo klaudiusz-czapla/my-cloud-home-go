@@ -16,6 +16,9 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 		Use:   "token",
 		Short: "Get the user token",
 		Long:  ``,
+		PreRun: func(cmd *cobra.Command, args []string) {
+			log.Print("executing 'token' command..")
+		},
 		Run: func(cmd *cobra.Command, args []string) {
 			proxy, err := mch.Login(v.GetString("clientId"), v.GetString("clientSecret"), v.GetString("username"), v.GetString("password"))
 			if err != nil {
@@ -30,6 +33,10 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 				if err != nil {
 					log.Fatal(err.Error())
 				}
+
+				tokenAsBytes, _ := json.Marshal(proxy.Session.Token)
+				tokenAsString := string(tokenAsBytes)
+				file.WriteString(tokenAsString)
 
 				if err := file.Close(); err != nil {
 					log.Fatal(err.Error())

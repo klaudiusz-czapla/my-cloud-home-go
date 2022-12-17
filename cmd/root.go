@@ -27,6 +27,9 @@ var rootCmd = &cobra.Command{
 	Use:   "my-cloud-home-go",
 	Short: "My Cloud Home CLI application",
 	Long:  `my-cloud-home-go is meant for managing My Cloud Home devices`,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		log.Print("executing 'root' command..")
+	},
 }
 
 func InitRootCommand(v *viper.Viper) *cobra.Command {

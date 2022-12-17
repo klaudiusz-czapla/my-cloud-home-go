@@ -27,6 +27,5 @@ Strongly inspired by:
 ./my-cloud-home-go token --as="./token"
 token=`cat token`
 echo $token
-./my-cloud-home-go help refresh-token
 ./my-cloud-home-go refresh-token -t=$(echo $token)
 ```

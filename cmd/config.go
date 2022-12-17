@@ -13,6 +13,9 @@ var configCmd = &cobra.Command{
 	Use:   "config",
 	Short: "Retrieves configuration in json format",
 	Long:  ``,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		log.Print("executing 'config' command..")
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := mch.GetConfiguration()
 		if err != nil {

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -14,6 +15,9 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Print the version number of My Cloud Home CLI app",
 	Long:  ``,
+	PreRun: func(cmd *cobra.Command, args []string) {
+		log.Print("executing 'version' command..")
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(version)
 	},

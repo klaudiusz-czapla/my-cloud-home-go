@@ -16,14 +16,7 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 		Short: "Refresh token",
 		Long:  ``,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			//var clientId = v.GetString("clientId")
-			//log.Printf("Client id=%s", clientId)
-
-			//var clientSecret = v.GetString("clientSecret")
-			//log.Printf("Client secret=%s", clientSecret)
-
-			//var token = v.GetString("token")
-			//log.Printf("Token=%s", token)
+			log.Print("executing 'refresh-token' command..")
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 
