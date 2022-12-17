@@ -22,9 +22,11 @@ func main() {
 	versionCmd := cmd.InitVersionCommand()
 	configCmd := cmd.InitConfigCommand()
 	tokenCmd := cmd.InitTokenCommand(v)
+	refreshTokenCmd := cmd.InitRefreshTokenCommand(v)
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(tokenCmd)
+	rootCmd.AddCommand(refreshTokenCmd)
 	rootCmd.Execute()
 }

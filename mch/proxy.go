@@ -7,6 +7,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/golang-jwt/jwt/v4"
 )
 
 type MchToken struct {
@@ -23,7 +25,12 @@ type MchSession struct {
 	Token  *MchToken
 }
 
-func Login(clientId string, clientSecret string, username string, password string) (*MchSession, error) {
+type MchProxy struct {
+	HttpClient *http.Client
+	*MchSession
+}
+
+func Login(clientId string, clientSecret string, username string, password string) (*MchProxy, error) {
 	config, err := GetConfiguration()
 	if err != nil {
 		return nil, err
@@ -45,7 +52,7 @@ func Login(clientId string, clientSecret string, username string, password strin
 
 	data, err := json.Marshal(req)
 	if err != nil {
-		return &MchSession{Config: config}, err
+		return &MchProxy{MchSession: &MchSession{Config: config}}, err
 	}
 
 	httpClient := http.Client{}
@@ -55,25 +62,33 @@ func Login(clientId string, clientSecret string, username string, password strin
 		bytes.NewBuffer(data),
 	)
 	if err != nil {
-		return &MchSession{Config: config}, err
+		return &MchProxy{MchSession: &MchSession{Config: config}}, err
 	}
 	defer res.Body.Close()
 
 	if !(res.StatusCode >= 200 && res.StatusCode <= 299) {
-		return &MchSession{Config: config}, fmt.Errorf("status code %d has been received from %s", res.StatusCode, res.Request.URL)
+		return &MchProxy{MchSession: &MchSession{Config: config}}, fmt.Errorf("status code %d has been received from %s", res.StatusCode, res.Request.URL)
 	}
 
 	var token MchToken
 	err = json.NewDecoder(res.Body).Decode(&token)
 
 	if err != nil {
-		return &MchSession{Config: config}, err
+		return &MchProxy{MchSession: &MchSession{Config: config}}, err
 	}
 
-	return &MchSession{Config: config, Token: &token}, nil
+	return &MchProxy{
+		HttpClient: &httpClient,
+		MchSession: &MchSession{
+			Config: config,
+			Token:  &token,
+		},
+	}, nil
 }
 
-func Relogin(clientId string, clientSecret string, session *MchSession) error {
+func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
+
+	session := mp.MchSession
 
 	req := map[string]string{
 		"audience":      "mycloud.com",
@@ -88,7 +103,7 @@ func Relogin(clientId string, clientSecret string, session *MchSession) error {
 		return err
 	}
 
-	httpClient := http.Client{}
+	httpClient := mp.HttpClient
 	res, err := httpClient.Post(
 		fmt.Sprintf("%s/oauth/token", session.Config.GetString("cloud.service.urls", "service.auth0.url")),
 		"application/json",
@@ -107,4 +122,19 @@ func Relogin(clientId string, clientSecret string, session *MchSession) error {
 	log.Print(string(b))
 
 	return nil
+}
+
+func decodeToken(tokenString string) *jwt.MapClaims, error {
+	claims := jwt.MapClaims{}
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if !token.Valid {
+		return nil, fmt.Error("Passed token is not valid")
+	}
+
+	return &claims, nil
 }

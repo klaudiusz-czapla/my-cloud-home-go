@@ -23,19 +23,21 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 
 			json.NewEncoder(os.Stdout).Encode(session.Token)
 
-			// TODO: move it to separate command
-			// keep possibility to persist token (save it to the file for later usage)
-			if v.GetBool("refresh") {
-				err = mch.Relogin(v.GetString("clientId"), v.GetString("clientSecret"), session)
-				if err != nil {
-					log.Fatal(err.Error())
-				}
+			if v.GetBool("decode-id-token") {
+
+			}
+
+			if v.GetBool("decode-refresh-token") {
+
 			}
 		},
 	}
 
-	tokenCmd.Flags().BoolP("refresh", "r", false, "Refresh the token.")
-	v.BindPFlag("refresh", tokenCmd.Flags().Lookup("refresh"))
+	tokenCmd.Flags().Bool("decode-id-token", false, "Decode id token.")
+	tokenCmd.Flags().Bool("decode-access-token", false, "Decode access token.")
+
+	v.BindPFlag("decode-id-token", tokenCmd.Flags().Lookup("decode-id-token"))
+	v.BindPFlag("decode-refresh-token", tokenCmd.Flags().Lookup("decode-refresh-token"))
 
 	return tokenCmd
 }
