@@ -14,7 +14,6 @@ var (
 )
 
 func main() {
-
 	log.Print("app has been started..")
 	log.Printf("started from the path: %s", absPath)
 
@@ -33,5 +32,8 @@ func main() {
 
 	tokenCmd.AddCommand(jwtCmd)
 
-	rootCmd.Execute()
+	err := rootCmd.Execute()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 }

@@ -154,5 +154,9 @@ func DecodeToken(tokenString string) (*jwt.MapClaims, error) {
 		return nil, fmt.Errorf("passed token is not valid")
 	}
 
+	if err := claims.Valid(); err != nil {
+		return nil, fmt.Errorf("claims inside the token are not valid")
+	}
+
 	return &claims, nil
 }
