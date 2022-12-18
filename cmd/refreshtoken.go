@@ -10,13 +10,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+const refreshTokenCmdName = "refresh-token"
+
 func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 	var refreshTokenCmd = &cobra.Command{
-		Use:   "refresh-token",
+		Use:   refreshTokenCmdName,
 		Short: "Refresh token",
 		Long:  ``,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			log.Print("executing 'refresh-token' command..")
+			log.Printf("executing '%s' command..", refreshTokenCmdName)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 
@@ -40,10 +42,16 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 				log.Fatal(err.Error())
 			}
 		},
+		PostRun: func(cmd *cobra.Command, args []string) {
+			log.Printf("command '%s' has been executed..", refreshTokenCmdName)
+		},
 	}
 
-	refreshTokenCmd.Flags().StringP("token", "t", "", "Refresh token from the original one (which is about to expire soon).")
+	refreshTokenCmd.Flags().StringP("token", "t", "", "Token.")
+	refreshTokenCmd.Flags().StringP("from", "f", "", "Token file")
+
 	v.BindPFlag("token", refreshTokenCmd.Flags().Lookup("token"))
+	v.BindPFlag("from", refreshTokenCmd.Flags().Lookup("from"))
 
 	return refreshTokenCmd
 }

@@ -7,9 +7,11 @@ import (
 	"github.com/spf13/viper"
 )
 
+const jwtCmdName = "jwt"
+
 func InitJwtCommand(v *viper.Viper) *cobra.Command {
 	var jwtCmd = &cobra.Command{
-		Use:   "jwt",
+		Use:   jwtCmdName,
 		Short: "Aggregates operations which can be done on JWT token",
 		Long:  ``,
 		PreRun: func(cmd *cobra.Command, args []string) {
