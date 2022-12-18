@@ -1,10 +1,10 @@
 .DEFAULT_GOAL := build
 
 fmt:
-	go fmt .
+	goimports -l -w . && go fmt .
 
 lint: fmt
-	golint .
+	golangci-lint run .
 
 vet: fmt
 	go vet .
