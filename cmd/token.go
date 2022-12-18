@@ -25,7 +25,7 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 				log.Fatal(err.Error())
 			}
 
-			cmd.SetContext(context.WithValue(cmd.Context(), contextProxyKey, proxy))
+			cmd.SetContext(context.WithValue(cmd.Context(), contextProxyKey, *proxy))
 		},
 		PreRun: func(cmd *cobra.Command, args []string) {
 			log.Printf("executing '%s' command..", tokenCmdName)
@@ -35,7 +35,10 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 			if contextProxyValue == nil {
 				log.Fatal("empty proxy object received from context")
 			}
-			proxy := contextProxyValue.(mch.MchProxy)
+			proxy, ok := contextProxyValue.(mch.MchProxy)
+			if !ok {
+				log.Fatal("invalid type. MchProxy expected")
+			}
 
 			json.NewEncoder(os.Stdout).Encode(proxy.Session.Token)
 
