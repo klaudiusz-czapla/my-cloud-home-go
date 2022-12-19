@@ -17,6 +17,8 @@ Strongly inspired by:
 > Application relies of existence of configuration json file named <em>config.json</em> stored in default location (place from application were started). You can override it easily by passing its custom path and custom name through the command line. Configuration file is meant to store sensitive values like secrets, password so please keep them secret. 
 
 ## Prerequisites
+- Delve debugger installed
+- Linters and other tools are in place
 ```
 go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 go install golang.org/x/lint/golint@latest

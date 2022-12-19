@@ -44,7 +44,7 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 
 			if v.GetString("to") != "" {
 
-				file, err := os.OpenFile(v.GetString("as"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, os.FileMode(int(0600)))
+				file, err := os.OpenFile(v.GetString("to"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, os.FileMode(int(0600)))
 				if err != nil {
 					log.Fatal(err.Error())
 				}
@@ -57,6 +57,9 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 					log.Fatal(err.Error())
 				}
 			}
+		},
+		PostRun: func(cmd *cobra.Command, args []string) {
+			log.Printf("command '%s' has been executed..", tokenCmdName)
 		},
 	}
 
