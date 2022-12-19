@@ -60,6 +60,22 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 			if err != nil {
 				log.Fatal(err.Error())
 			}
+
+			if f != "" {
+				file, err := os.OpenFile(f, os.O_RDWR|os.O_TRUNC|os.O_CREATE, os.FileMode(int(0600)))
+				if err != nil {
+					log.Fatal(err.Error())
+				}
+
+				tokenAsBytes, _ := json.Marshal(proxy.Session.Token)
+				tokenAsString := string(tokenAsBytes)
+				file.WriteString(tokenAsString)
+
+				if err := file.Close(); err != nil {
+					log.Fatal(err.Error())
+				}
+			}
+
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
 			log.Printf("command '%s' has been executed..", refreshTokenCmdName)

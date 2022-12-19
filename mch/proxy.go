@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -137,7 +136,17 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 	}
 
 	b, _ := io.ReadAll(res.Body)
-	log.Print(string(b))
+	fmt.Print(string(b))
+	res.Body = io.NopCloser(bytes.NewBuffer(b))
+
+	var token MchToken
+	err = json.NewDecoder(res.Body).Decode(&token)
+	if err != nil {
+		return err
+	}
+
+	// exchange old token to the new one
+	mp.Session.Token = &token
 
 	return nil
 }
