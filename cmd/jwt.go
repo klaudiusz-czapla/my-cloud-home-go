@@ -24,7 +24,7 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 
-			proxy, err := GetProxy(cmd)
+			proxy, err := GetOrCreateProxy(cmd, v)
 			if err != nil {
 				log.Fatal(err.Error())
 			}

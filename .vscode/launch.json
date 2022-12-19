@@ -29,6 +29,22 @@
             "args": ["token", "--to=./token"]
         },
         {
+            "name": "Refresh token",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["refresh-token", "-t=abc"]
+        },
+        {
+            "name": "Refresh token stored in file",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["refresh-token", "-f=./token"]
+        },
+        {
             "name": "Decode id token",
             "type": "go",
             "request": "launch",

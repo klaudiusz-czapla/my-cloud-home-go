@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -20,24 +19,20 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 		Long:             ``,
 		TraverseChildren: true,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			proxy, err := mch.Login(v.GetString("clientId"), v.GetString("clientSecret"), v.GetString("username"), v.GetString("password"))
+			proxy, err := CreateProxy(v)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
 
-			cmd.SetContext(context.WithValue(cmd.Context(), contextProxyKey, *proxy))
+			cmd.SetContext(context.WithValue(cmd.Context(), contextProxyKey, proxy))
 		},
 		PreRun: func(cmd *cobra.Command, args []string) {
 			log.Printf("executing '%s' command..", tokenCmdName)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			contextProxyValue := cmd.Context().Value(contextProxyKey)
-			if contextProxyValue == nil {
-				log.Fatal("empty proxy object received from context")
-			}
-			proxy, ok := contextProxyValue.(mch.MchProxy)
-			if !ok {
-				log.Fatal("invalid type. MchProxy expected")
+			proxy, err := GetProxy(cmd)
+			if err != nil {
+				log.Fatal(err.Error())
 			}
 
 			json.NewEncoder(os.Stdout).Encode(proxy.Session.Token)

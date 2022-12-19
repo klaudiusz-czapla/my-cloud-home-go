@@ -18,13 +18,13 @@ func GetProxy(cmd *cmd.Command) (*mch.MchProxy, error) {
 	if contextProxyValue != nil {
 		proxy, ok := contextProxyValue.(*mch.MchProxy)
 		if !ok {
-			return nil, fmt.Errorf("invalid type. MchProxy expected")
+			return nil, fmt.Errorf("invalid type: MchProxy pointer expected")
 		}
 
 		return proxy, nil
 	}
 
-	return nil, fmt.Errorf("proxy not found in context object")
+	return nil, nil
 }
 
 func CreateProxy(v *viper.Viper) (*mch.MchProxy, error) {
@@ -40,7 +40,11 @@ func GetOrCreateProxy(cmd *cmd.Command, v *viper.Viper) (*mch.MchProxy, error) {
 	proxy, err := GetProxy(cmd)
 
 	if proxy != nil {
-		return proxy, err
+		return proxy, nil
+	}
+
+	if err != nil {
+		return nil, err
 	}
 
 	return CreateProxy(v)
