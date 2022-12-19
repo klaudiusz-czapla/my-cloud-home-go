@@ -47,8 +47,8 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 	jwtCmd.Flags().Bool("decode-id-token", false, "Decode id token.")
 	jwtCmd.Flags().Bool("decode-access-token", false, "Decode access token.")
 
-	v.BindPFlag("token", jwtCmd.Flags().Lookup("decode-id-token"))
-	v.BindPFlag("from", jwtCmd.Flags().Lookup("decode-access-token"))
+	v.BindPFlag("decode-id-token", jwtCmd.Flags().Lookup("decode-id-token"))
+	v.BindPFlag("decode-access-token", jwtCmd.Flags().Lookup("decode-access-token"))
 
 	return jwtCmd
 }

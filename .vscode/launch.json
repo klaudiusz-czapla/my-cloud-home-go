@@ -34,7 +34,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["refresh-token", "-t=abc"]
+            "args": ["refresh-token", "--token=abc"]
         },
         {
             "name": "Refresh token stored in file",
@@ -42,7 +42,7 @@
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}",
-            "args": ["refresh-token", "-f=./token"]
+            "args": ["refresh-token", "--from=./token"]
         },
         {
             "name": "Decode id token",
