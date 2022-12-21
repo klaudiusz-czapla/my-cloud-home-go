@@ -52,5 +52,21 @@
             "program": "${workspaceFolder}",
             "args": ["token", "jwt", "--decode-id-token"]
         },
+        {
+            "name": "Decode id token (from token stored in file)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["jwt", "--decode-id-token", "--from=./token"]
+        },
+        {
+            "name": "Decode id token (from token received as command argument)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["jwt", "--decode-id-token", "--token=abc"]
+        },
     ]
 }

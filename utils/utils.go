@@ -17,7 +17,7 @@ func FileExists(filePath string) bool {
 }
 
 // Opens a text file (if exists), reads all the text in the file into a string, and then closes the file.
-func WriteAllText(f string) (string, error) {
+func ReadAllText(f string) (string, error) {
 	if !FileExists(f) {
 		return "", fmt.Errorf("file %s does not exist", f)
 	}
@@ -29,7 +29,7 @@ func WriteAllText(f string) (string, error) {
 }
 
 // Creates a new file, write the contents to the file, and then closes the file. If the target file already exists, it is overwritten.
-func WriteFileContent(f, data string) error {
+func WriteAllText(f, data string) error {
 	file, err := os.OpenFile(f, os.O_RDWR|os.O_TRUNC|os.O_CREATE, os.FileMode(int(0600)))
 	if err != nil {
 		return err
@@ -44,6 +44,7 @@ func WriteFileContent(f, data string) error {
 	return nil
 }
 
+// Emulates coalesce operator known from other languages
 func If[T any](cond bool, a, b T) T {
 	if cond {
 		return a
@@ -51,6 +52,7 @@ func If[T any](cond bool, a, b T) T {
 	return b
 }
 
+// Emulates coalesce operator known from other languages
 func IfFn[T any](fn func() bool, a, b T) T {
 	if fn() {
 		return a
