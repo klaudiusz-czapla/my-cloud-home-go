@@ -2,6 +2,13 @@ linters:
   disable-all: true
   enable:
     - errcheck
+    - goconst
     - goimports
     - govet
     - staticcheck
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+  goconst:
+    min-len: 2
+    min-occurrences: 3

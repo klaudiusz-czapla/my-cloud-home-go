@@ -47,12 +47,13 @@ From dev perspective
 - linters
     ```
     go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
+    #golangci-lint help linters
     go install golang.org/x/lint/golint@latest
     go install golang.org/x/tools/cmd/goimports@latest
     ```
 
 From runtime perspective
-- config.json file in place
+- config.json
 
 ## Other resources you may find useful
 - https://home.mycloud.com
@@ -61,11 +62,11 @@ From runtime perspective
 - https://github.com/spf13/viper
 
 ## How to
-
-```
-./my-cloud-home-go token --to="./token"
-token=`cat token`
-./my-cloud-home-go refresh-token --token=$(echo $token)
-# or
-./my-cloud-home-go refresh-token --from=./token
-```
+- Refresh the token
+    ```
+    ./my-cloud-home-go token --to="./token"
+    token=`cat token`
+    ./my-cloud-home-go refresh-token --token=$(echo $token)
+    # or
+    ./my-cloud-home-go refresh-token --from=./token
+    ```

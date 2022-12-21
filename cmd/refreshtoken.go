@@ -5,36 +5,41 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/utils"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/common"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-const REFRESH_TOKEN_CMD_NAME = "refresh-token"
+const refreshTokenCmdName = "refresh-token"
 
 const (
-	REFRESH_TOKEN_CMD_TOKEN_FLAG_LBL = "token"
-	REFRESH_TOKEN_CMD_FROM_FLAG_LBL  = "from"
+	refreshCmdTokenFlag = "token"
+	refreshCmdFromFlag  = "from"
 )
 
 func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
+
+	ac, err := common.NewAppConfigFromViper(v)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	var refreshTokenCmd = &cobra.Command{
-		Use:   REFRESH_TOKEN_CMD_NAME,
+		Use:   refreshTokenCmdName,
 		Short: "Refresh token",
 		Long:  ``,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			log.Printf("executing '%s' command..", REFRESH_TOKEN_CMD_NAME)
+			log.Printf("executing '%s' command..", refreshTokenCmdName)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 
-			var clientId = v.GetString(clientIdLabel)
-			var clientSecret = v.GetString(clientSecretLabel)
-			var t = v.GetString("token")
-			var f = v.GetString("from")
+			var tokenFilePath = v.GetString(refreshCmdFromFlag)
+			var token = v.GetString(refreshCmdTokenFlag)
 
-			proxy, err := CreateProxyEitherFromPlainTextOrFile(v)
+			proxy, err := CreateProxyForToken(ac, tokenFilePath, token)
 
-			err = proxy.Relogin(clientId, clientSecret)
+			err = proxy.Relogin(ac.ClientId, ac.ClientSecret)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
@@ -42,14 +47,16 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 			tokenAsBytes, _ := json.Marshal(proxy.Session.Token)
 			tokenAsString := string(tokenAsBytes)
 
-			if f != "" {
-				err := utils.WriteFileContent(f, tokenString)
+			if tokenFilePath != "" {
+				err := utils.WriteAllText(tokenFilePath, tokenAsString)
 				if err != nil {
 					log.Fatal(err.Error())
 				}
-			} else if t != "" {
+			} else if token != "" {
 				// if token received from terminal then print it to terminal as well instead of file
 				fmt.Print(tokenAsString)
+			} else {
+
 			}
 
 		},
@@ -58,12 +65,12 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 		},
 	}
 
-	refreshTokenCmd.Flags().String("token", "", "Token.")
-	refreshTokenCmd.Flags().String("from", "", "Token file")
-	refreshTokenCmd.MarkFlagsMutuallyExclusive("token", "from")
+	refreshTokenCmd.Flags().String(refreshCmdTokenFlag, "", "Token.")
+	refreshTokenCmd.Flags().String(refreshCmdFromFlag, "", "Token file")
+	refreshTokenCmd.MarkFlagsMutuallyExclusive(refreshCmdTokenFlag, refreshCmdFromFlag)
 
-	v.BindPFlag("token", refreshTokenCmd.Flags().Lookup("token"))
-	v.BindPFlag("from", refreshTokenCmd.Flags().Lookup("from"))
+	v.BindPFlag(refreshCmdTokenFlag, refreshTokenCmd.Flags().Lookup(refreshCmdTokenFlag))
+	v.BindPFlag(refreshCmdFromFlag, refreshTokenCmd.Flags().Lookup(refreshCmdFromFlag))
 
 	return refreshTokenCmd
 }

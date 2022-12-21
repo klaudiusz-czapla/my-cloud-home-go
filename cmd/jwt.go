@@ -49,7 +49,7 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 				}
 
 			} else {
-				CreateProxyForToken(ac, v.GetString(), v.GetString())
+				CreateProxyForToken(ac, v.GetString(jwtCmdTokenFlag), v.GetString(jwtCmdFromFlag))
 			}
 
 			if proxy == nil {
