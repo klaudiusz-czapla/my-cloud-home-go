@@ -153,15 +153,15 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 
 func DecodeToken(tokenString string) (*jwt.MapClaims, error) {
 	claims := jwt.MapClaims{}
-	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
+	_, _, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if !token.Valid {
-		return nil, fmt.Errorf("passed token is not valid")
-	}
+	// if !token.Valid {
+	// 	return nil, fmt.Errorf("passed token is not valid")
+	// }
 
 	if err := claims.Valid(); err != nil {
 		return nil, fmt.Errorf("claims inside the token are not valid")

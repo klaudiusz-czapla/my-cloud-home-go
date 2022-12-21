@@ -23,6 +23,7 @@ func main() {
 	tokenCmd := cmd.InitTokenCommand(v)
 	refreshTokenCmd := cmd.InitRefreshTokenCommand(v)
 	jwtCmd := cmd.InitJwtCommand(v)
+	tokenJwtCmd := cmd.InitJwtCommand(v)
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(configCmd)
@@ -30,7 +31,7 @@ func main() {
 	rootCmd.AddCommand(refreshTokenCmd)
 	rootCmd.AddCommand(jwtCmd)
 
-	tokenCmd.AddCommand(jwtCmd)
+	tokenCmd.AddCommand(tokenJwtCmd)
 
 	err := rootCmd.Execute()
 	if err != nil {
