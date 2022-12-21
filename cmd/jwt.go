@@ -24,20 +24,26 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 
-			proxy, err := GetOrCreateProxy(cmd, v)
-			if err != nil {
-				log.Fatal(err.Error())
+			var parentCmd = cmd.Parent()
+			if parentCmd.Use == "token" {
+				proxy, err := GetProxy(cmd)
+				if err != nil {
+					log.Fatal(err.Error())
+				}
+
+				if v.GetBool("decode-id-token") {
+					claims, _ := mch.DecodeToken(proxy.Session.Token.IdToken)
+					fmt.Print(claims)
+				}
+
+				if v.GetBool("decode-access-token") {
+					claims, _ := mch.DecodeToken(proxy.Session.Token.AccessToken)
+					fmt.Print(claims)
+				}
+			} else {
+
 			}
 
-			if v.GetBool("decode-id-token") {
-				claims, _ := mch.DecodeToken(proxy.Session.Token.IdToken)
-				fmt.Print(claims)
-			}
-
-			if v.GetBool("decode-access-token") {
-				claims, _ := mch.DecodeToken(proxy.Session.Token.AccessToken)
-				fmt.Print(claims)
-			}
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
 			log.Printf("command '%s' has been executed..", jwtCmdName)
@@ -49,6 +55,13 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 
 	v.BindPFlag("decode-id-token", jwtCmd.Flags().Lookup("decode-id-token"))
 	v.BindPFlag("decode-access-token", jwtCmd.Flags().Lookup("decode-access-token"))
+
+	jwtCmd.Flags().String("token", "", "Token.")
+	jwtCmd.Flags().String("from", "", "Token file")
+	jwtCmd.MarkFlagsMutuallyExclusive("token", "from")
+
+	v.BindPFlag("token", jwtCmd.Flags().Lookup("token"))
+	v.BindPFlag("from", jwtCmd.Flags().Lookup("from"))
 
 	return jwtCmd
 }

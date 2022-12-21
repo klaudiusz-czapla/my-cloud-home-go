@@ -48,7 +48,8 @@ func InitRootCommand(v *viper.Viper) *cobra.Command {
 func initConfig(v *viper.Viper) {
 	addJsonFile(v)
 	cobra.OnInitialize(func() {
-		if v.GetString("configPath") != defaultConfigPath && v.GetString("configFileName") != defaultConfigFileName {
+		// if config is non-default then override it
+		if v.GetString("configPath") != defaultConfigPath || v.GetString("configFileName") != defaultConfigFileName {
 			addJsonFile(v)
 		}
 	})
@@ -67,6 +68,7 @@ func addJsonFileByPath(v *viper.Viper, filePath string, fileName string) {
 				log.Fatal(err.Error())
 			}
 			log.Printf("configuration has been retrieved from file: %s", in)
+			log.Printf("configuration file used: %s", v.ConfigFileUsed())
 		}
 	}
 }

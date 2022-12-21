@@ -1,9 +1,13 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
+	"strings"
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/utils"
 	cmd "github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -48,4 +52,35 @@ func GetOrCreateProxy(cmd *cmd.Command, v *viper.Viper) (*mch.MchProxy, error) {
 	}
 
 	return CreateProxy(v)
+}
+
+func CreateProxyEitherFromPlainTextOrFile(ac *AppConfig) (*mch.MchProxy, error) {
+	var clientId = v.GetString("clientId")
+	var clientSecret = v.GetString("clientSecret")
+	var t = v.GetString("token")
+	var f = v.GetString("from")
+
+	var tokenString = ""
+
+	if f != "" {
+		t, err := utils.ReadFileContent(f)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		tokenString = t
+	} else if t != "" {
+		tokenString = t
+	} else {
+		log.Fatal("unknown command switch")
+	}
+
+	var token mch.MchToken
+	err := json.NewDecoder(strings.NewReader(tokenString)).Decode(&token)
+	if err != nil {
+		return err
+	}
+	proxy, err := mch.NewProxy(&token)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 }
