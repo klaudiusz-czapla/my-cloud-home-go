@@ -13,11 +13,11 @@ type MchConfig struct {
 }
 
 const (
-	configURL = "https://config.mycloud.com/config/v1/config"
+	configUrl = "https://config.mycloud.com/config/v1/config"
 )
 
 func GetConfiguration() (*MchConfig, error) {
-	res, err := http.Get(configURL)
+	res, err := http.Get(configUrl)
 	if err != nil {
 		return nil, err
 	}

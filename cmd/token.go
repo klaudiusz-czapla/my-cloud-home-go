@@ -13,6 +13,10 @@ import (
 
 const tokenCmdName = "token"
 
+const (
+	tokenCmdToFlag = "to"
+)
+
 func InitTokenCommand(v *viper.Viper) *cobra.Command {
 
 	ac, err := common.NewAppConfigFromViper(v)
@@ -37,7 +41,7 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 			log.Printf("executing '%s' command..", tokenCmdName)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			proxy, err := GetProxy(cmd)
+			proxy, err := GetProxyFromContext(cmd.Context())
 			if err != nil {
 				log.Fatal(err.Error())
 			}
@@ -65,9 +69,9 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 		},
 	}
 
-	tokenCmd.Flags().String("to", "", "Token file")
+	tokenCmd.Flags().String(tokenCmdToFlag, "", "Token file")
 
-	v.BindPFlag("to", tokenCmd.Flags().Lookup("to"))
+	v.BindPFlag(tokenCmdToFlag, tokenCmd.Flags().Lookup(tokenCmdToFlag))
 
 	return tokenCmd
 }
