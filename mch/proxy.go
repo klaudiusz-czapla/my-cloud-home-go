@@ -16,20 +16,6 @@ type MchProxy struct {
 	Session    *MchSession
 }
 
-type MchSession struct {
-	Config *MchConfig
-	Token  *MchToken
-}
-
-type MchToken struct {
-	IdToken      string `json:"id_token"`
-	Scope        string `json:"scope"`
-	RefreshToken string `json:"refresh_token"`
-	AccessToken  string `json:"access_token"`
-	TokenType    string `json:"token_type"`
-	ExpiresIn    int32  `json:"expires_in"`
-}
-
 func Login(clientId string, clientSecret string, username string, password string) (*MchProxy, error) {
 	config, err := GetConfiguration()
 	if err != nil {
@@ -150,6 +136,58 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 	mp.Session.Token = &token
 
 	return nil
+}
+
+func (mp *MchProxy) GetUserInfo(username string) error {
+
+	addr := fmt.Sprintf("%s/authservice/v2/auth0/user?email=%s",
+		session.Config.GetString("cloud.service.urls", "service.auth0.url"),
+		username)
+
+	var bearer = "Bearer " + "<todo>"
+
+	// Create a new request using http
+	req, err := http.NewRequest("GET", addr, nil)
+
+	// add authorization header to the req
+	req.Header.Add("Authorization", bearer)
+
+	resp, err := mp.HttpClient.Do(req)
+
+	// data, err := json.Marshal(req)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// httpClient := mp.HttpClient
+	// res, err := httpClient.Post(
+	// 	,
+	// 	"application/json",
+	// 	bytes.NewBuffer(data),
+	// )
+	// if err != nil {
+	// 	return err
+	// }
+	// defer res.Body.Close()
+
+	// if !(res.StatusCode >= 200 && res.StatusCode <= 299) {
+	// 	return fmt.Errorf("status code %d has been received from %s", res.StatusCode, res.Request.URL)
+	// }
+
+	// b, _ := io.ReadAll(res.Body)
+	// fmt.Print(string(b))
+	// res.Body = io.NopCloser(bytes.NewBuffer(b))
+
+	// var token MchToken
+	// err = json.NewDecoder(res.Body).Decode(&token)
+	// if err != nil {
+	// 	return err
+	// }
+
+	// // exchange old token to the new one
+	// mp.Session.Token = &token
+
+	// return nil
 }
 
 func DecodeToken(tokenString string) (*jwt.MapClaims, *IdTokenPayload, error) {
