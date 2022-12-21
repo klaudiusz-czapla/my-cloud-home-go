@@ -66,7 +66,7 @@ func Login(clientId string, clientSecret string, username string, password strin
 	defer res.Body.Close()
 
 	if !(res.StatusCode >= 200 && res.StatusCode <= 299) {
-		return &MchProxy{Session: &MchSession{Config: config}}, fmt.Errorf("status code %d has been received from %s", res.StatusCode, res.Request.URL)
+		return &MchProxy{Session: &MchSession{Config: config}}, fmt.Errorf("invalid status code %d has been received from %s", res.StatusCode, res.Request.URL)
 	}
 
 	var token MchToken

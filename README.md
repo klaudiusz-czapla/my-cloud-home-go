@@ -21,23 +21,40 @@ Strongly inspired by:
     "username": "",
     "password": "",
     "clientId": "",
-    "clientSecret": ""
+    "clientSecret": "",
+    "deviceName": ""
 }
 ```
 
 ## Prerequisites
 
 From dev perspective
-- Delve debugger installed
-- Linters and other tools are in place
-```
-go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
-go install golang.org/x/lint/golint@latest
-go install golang.org/x/tools/cmd/goimports@latest
-```
+- go
+
+    After installing go according to docs you may add those lines to your .profile file:
+    ```
+    export PATH=$PATH:/usr/local/go/bin
+    export GOPATH=$HOME/go
+    export PATH=$PATH:$GOPATH/bin
+    ```
+    and then do sth like this:
+    ```
+    source ~/.profile
+    ```
+    or /etc/profile (for a system-wide installation)
+
+- delve debugger installed
+- gopls
+- linters
+    ```
+    go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
+    #golangci-lint help linters
+    go install golang.org/x/lint/golint@latest
+    go install golang.org/x/tools/cmd/goimports@latest
+    ```
 
 From runtime perspective
-- config.json file in place
+- config.json
 
 ## Other resources you may find useful
 - https://home.mycloud.com
@@ -46,11 +63,11 @@ From runtime perspective
 - https://github.com/spf13/viper
 
 ## How to
-
-```
-./my-cloud-home-go token --to="./token"
-token=`cat token`
-./my-cloud-home-go refresh-token --token=$(echo $token)
-# or
-./my-cloud-home-go refresh-token --from=./token
-```
+- Refresh the token
+    ```
+    ./my-cloud-home-go token --to="./token"
+    token=`cat token`
+    ./my-cloud-home-go refresh-token --token=$(echo $token)
+    # or
+    ./my-cloud-home-go refresh-token --from=./token
+    ```

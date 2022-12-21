@@ -6,20 +6,32 @@ import (
 	"log"
 	"os"
 
+	"github.com/klaudiusz-czapla/my-cloud-home-go/common"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 const tokenCmdName = "token"
 
+const (
+	tokenCmdToFlag = "to"
+)
+
 func InitTokenCommand(v *viper.Viper) *cobra.Command {
+
+	ac, err := common.NewAppConfigFromViper(v)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	var tokenCmd = &cobra.Command{
 		Use:              tokenCmdName,
 		Short:            "Get the user token",
 		Long:             ``,
 		TraverseChildren: true,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			proxy, err := CreateProxy(v)
+			proxy, err := CreateProxyForAppConfig(ac)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
@@ -30,27 +42,25 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 			log.Printf("executing '%s' command..", tokenCmdName)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
-			proxy, err := GetProxy(cmd)
+
+			var tokenFilePath = v.GetString(tokenCmdName + "." + tokenCmdToFlag)
+
+			proxy, err := GetProxyFromContext(cmd.Context())
 			if err != nil {
 				log.Fatal(err.Error())
 			}
 
 			json.NewEncoder(os.Stdout).Encode(proxy.Session.Token)
 
-			if v.GetString("to") != "" {
+			if tokenFilePath != "" {
 
-				file, err := os.OpenFile(v.GetString("to"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, os.FileMode(int(0600)))
+				tokenAsBytes, _ := json.Marshal(proxy.Session.Token)
+				tokenAsString := string(tokenAsBytes)
+				err := utils.WriteAllText(tokenFilePath, tokenAsString)
 				if err != nil {
 					log.Fatal(err.Error())
 				}
 
-				tokenAsBytes, _ := json.Marshal(proxy.Session.Token)
-				tokenAsString := string(tokenAsBytes)
-				file.WriteString(tokenAsString)
-
-				if err := file.Close(); err != nil {
-					log.Fatal(err.Error())
-				}
 			}
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
@@ -58,9 +68,9 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 		},
 	}
 
-	tokenCmd.Flags().String("to", "", "Token file")
+	tokenCmd.Flags().String(tokenCmdToFlag, "", "Token file")
 
-	v.BindPFlag("to", tokenCmd.Flags().Lookup("to"))
+	v.BindPFlag(tokenCmdName+"."+tokenCmdToFlag, tokenCmd.Flags().Lookup(tokenCmdToFlag))
 
 	return tokenCmd
 }
