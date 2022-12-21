@@ -21,7 +21,8 @@ Strongly inspired by:
     "username": "",
     "password": "",
     "clientId": "",
-    "clientSecret": ""
+    "clientSecret": "",
+    "deviceName": ""
 }
 ```
 
