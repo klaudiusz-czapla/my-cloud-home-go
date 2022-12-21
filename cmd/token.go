@@ -43,7 +43,7 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 
-			to := v.GetString(tokenCmdToFlag)
+			var tokenFilePath = v.GetString(tokenCmdToFlag)
 
 			proxy, err := GetProxyFromContext(cmd.Context())
 			if err != nil {
@@ -52,11 +52,14 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 
 			json.NewEncoder(os.Stdout).Encode(proxy.Session.Token)
 
-			if v.GetString(tokenCmdToFlag) != "" {
+			if tokenFilePath != "" {
 
 				tokenAsBytes, _ := json.Marshal(proxy.Session.Token)
 				tokenAsString := string(tokenAsBytes)
-				err := utils.WriteAllText(tokenAsString)
+				err := utils.WriteAllText(tokenFilePath, tokenAsString)
+				if err != nil {
+					log.Fatal(err.Error())
+				}
 
 			}
 		},
