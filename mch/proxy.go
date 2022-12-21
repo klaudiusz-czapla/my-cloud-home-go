@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/mitchellh/mapstructure"
 )
 
 type MchProxy struct {
@@ -151,21 +152,27 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 	return nil
 }
 
-func DecodeToken(tokenString string) (*jwt.MapClaims, error) {
+func DecodeToken(tokenString string) (*jwt.MapClaims, *IdTokenPayload, error) {
 	claims := jwt.MapClaims{}
-	_, _, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
+	token, parts, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+
+	fmt.Print(token)
+	fmt.Print(parts)
 
 	// if !token.Valid {
 	// 	return nil, fmt.Errorf("passed token is not valid")
 	// }
 
 	if err := claims.Valid(); err != nil {
-		return nil, fmt.Errorf("claims inside the token are not valid")
+		return nil, nil, fmt.Errorf("claims inside the token are not valid")
 	}
 
-	return &claims, nil
+	var idTokenPayload = IdTokenPayload{}
+	mapstructure.Decode(claims, &idTokenPayload)
+
+	return &claims, &idTokenPayload, nil
 }

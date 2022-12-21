@@ -49,7 +49,7 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 				}
 
 			} else {
-				CreateProxyForToken(ac, v.GetString(jwtCmdTokenFlag), v.GetString(jwtCmdFromFlag))
+				CreateProxyForToken(ac, v.GetString(jwtCmdName+"."+jwtCmdTokenFlag), v.GetString(jwtCmdName+"."+jwtCmdFromFlag))
 			}
 
 			if proxy == nil {
@@ -57,12 +57,12 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 			}
 
 			if v.GetBool(jwtCmdName + "." + jwtCmdDecodeIdTokenFlag) {
-				claims, _ := mch.DecodeToken(proxy.Session.Token.IdToken)
+				claims, _, _ := mch.DecodeToken(proxy.Session.Token.IdToken)
 				fmt.Print(claims)
 			}
 
 			if v.GetBool(jwtCmdName + "." + jwtCmdDecodeAccessTokenFlag) {
-				claims, _ := mch.DecodeToken(proxy.Session.Token.AccessToken)
+				claims, _, _ := mch.DecodeToken(proxy.Session.Token.AccessToken)
 				fmt.Print(claims)
 			}
 
