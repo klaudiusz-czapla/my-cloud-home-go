@@ -12,14 +12,19 @@ import (
 
 const jwtCmdName = "jwt"
 
-const ()
+const (
+	jwtCmdTokenFlag             = "token"
+	jwtCmdFromFlag              = "from"
+	jwtCmdDecodeIdTokenFlag     = "decode-id-token"
+	jwtCmdDecodeAccessTokenFlag = "decode-access-token"
+)
 
 // jwt command can be subcommand for token (parent) command
 // at the same time it can be standalone command - in that case all input parameters will be processed directly here
 // instead of relying on getting context with expected value from parent command
 func InitJwtCommand(v *viper.Viper) *cobra.Command {
 
-	ac, err := common.FromViper(v)
+	ac, err := common.NewAppConfigFromViper(v)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -38,7 +43,7 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 			var parentCmd = cmd.Parent()
 			// executed as subcommand of token parent command
 			if parentCmd.Use == "token" {
-				proxy, err := GetProxy(cmd.Context())
+				proxy, err = GetProxyFromContext(cmd.Context())
 				if err != nil {
 					log.Fatal(err.Error())
 				}
@@ -51,12 +56,12 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 				log.Fatal("empty proxy object")
 			}
 
-			if v.GetBool("decode-id-token") {
+			if v.GetBool(jwtCmdDecodeIdTokenFlag) {
 				claims, _ := mch.DecodeToken(proxy.Session.Token.IdToken)
 				fmt.Print(claims)
 			}
 
-			if v.GetBool("decode-access-token") {
+			if v.GetBool(jwtCmdDecodeAccessTokenFlag) {
 				claims, _ := mch.DecodeToken(proxy.Session.Token.AccessToken)
 				fmt.Print(claims)
 			}
@@ -67,18 +72,16 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 		},
 	}
 
-	jwtCmd.Flags().Bool("decode-id-token", false, "Decode id token.")
-	jwtCmd.Flags().Bool("decode-access-token", false, "Decode access token.")
+	jwtCmd.Flags().Bool(jwtCmdDecodeIdTokenFlag, false, "Decode id token.")
+	jwtCmd.Flags().Bool(jwtCmdDecodeAccessTokenFlag, false, "Decode access token.")
+	jwtCmd.Flags().String(jwtCmdTokenFlag, "", "Token.")
+	jwtCmd.Flags().String(jwtCmdFromFlag, "", "Token file")
+	jwtCmd.MarkFlagsMutuallyExclusive(jwtCmdTokenFlag, jwtCmdFromFlag)
 
-	v.BindPFlag("decode-id-token", jwtCmd.Flags().Lookup("decode-id-token"))
-	v.BindPFlag("decode-access-token", jwtCmd.Flags().Lookup("decode-access-token"))
-
-	jwtCmd.Flags().String("token", "", "Token.")
-	jwtCmd.Flags().String("from", "", "Token file")
-	jwtCmd.MarkFlagsMutuallyExclusive("token", "from")
-
-	v.BindPFlag("token", jwtCmd.Flags().Lookup("token"))
-	v.BindPFlag("from", jwtCmd.Flags().Lookup("from"))
+	v.BindPFlag(jwtCmdDecodeIdTokenFlag, jwtCmd.Flags().Lookup(jwtCmdDecodeIdTokenFlag))
+	v.BindPFlag(jwtCmdDecodeAccessTokenFlag, jwtCmd.Flags().Lookup(jwtCmdDecodeAccessTokenFlag))
+	v.BindPFlag(jwtCmdTokenFlag, jwtCmd.Flags().Lookup(jwtCmdTokenFlag))
+	v.BindPFlag(jwtCmdFromFlag, jwtCmd.Flags().Lookup(jwtCmdFromFlag))
 
 	return jwtCmd
 }

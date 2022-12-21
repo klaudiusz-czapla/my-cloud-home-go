@@ -9,7 +9,7 @@ type AppConfig struct {
 	Password     string `json:"password"`
 }
 
-func FromViper(v *viper.Viper) (*AppConfig, error) {
+func NewAppConfigFromViper(v *viper.Viper) (*AppConfig, error) {
 
 	ac := &AppConfig{}
 	if err := v.Unmarshal(ac); err != nil {

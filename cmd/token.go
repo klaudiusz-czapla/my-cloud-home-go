@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/klaudiusz-czapla/my-cloud-home-go/common"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -13,13 +14,19 @@ import (
 const tokenCmdName = "token"
 
 func InitTokenCommand(v *viper.Viper) *cobra.Command {
+
+	ac, err := common.NewAppConfigFromViper(v)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
 	var tokenCmd = &cobra.Command{
 		Use:              tokenCmdName,
 		Short:            "Get the user token",
 		Long:             ``,
 		TraverseChildren: true,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			proxy, err := CreateProxy(v)
+			proxy, err := CreateProxyForAppConfig(ac)
 			if err != nil {
 				log.Fatal(err.Error())
 			}

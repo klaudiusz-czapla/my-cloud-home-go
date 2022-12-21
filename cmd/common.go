@@ -17,7 +17,7 @@ type ContextKey string
 
 const contextProxyKey = ContextKey("proxy")
 
-func GetProxy(context context.Context) (*mch.MchProxy, error) {
+func GetProxyFromContext(context context.Context) (*mch.MchProxy, error) {
 	contextProxyValue := context.Value(contextProxyKey)
 
 	if contextProxyValue != nil {
@@ -42,7 +42,7 @@ func CreateProxyForAppConfig(ac *common.AppConfig) (*mch.MchProxy, error) {
 }
 
 func GetOrCreateProxy(cmd *cmd.Command, ac *common.AppConfig) (*mch.MchProxy, error) {
-	proxy, err := GetProxy(cmd.Context())
+	proxy, err := GetProxyFromContext(cmd.Context())
 
 	if proxy != nil {
 		return proxy, nil
@@ -68,7 +68,7 @@ func CreateProxyForToken(ac *common.AppConfig, tokenFilePath string, token strin
 	} else if token != "" {
 		tokenString = token
 	} else {
-		log.Fatalf("token file path and token cannot be both empty")
+		log.Fatalf("token file path and token cannot be both empty. Either the first one or the second parameter has to be set to some non-empty value")
 	}
 
 	var mt mch.MchToken
