@@ -56,7 +56,7 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 				// if token received from terminal then print it to terminal as well instead of file
 				fmt.Print(tokenAsString)
 			} else {
-
+				log.Fatalf("token file path and token cannot be both empty. Either the first one or the second parameter has to be set to some non-empty value")
 			}
 
 		},

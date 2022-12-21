@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/utils"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
 	"github.com/spf13/cobra"
 	viper "github.com/spf13/viper"
 )

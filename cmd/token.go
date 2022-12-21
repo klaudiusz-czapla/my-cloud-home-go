@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/common"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -41,6 +42,9 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 			log.Printf("executing '%s' command..", tokenCmdName)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
+
+			to := v.GetString(tokenCmdToFlag)
+
 			proxy, err := GetProxyFromContext(cmd.Context())
 			if err != nil {
 				log.Fatal(err.Error())
@@ -48,20 +52,12 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 
 			json.NewEncoder(os.Stdout).Encode(proxy.Session.Token)
 
-			if v.GetString("to") != "" {
-
-				file, err := os.OpenFile(v.GetString("to"), os.O_RDWR|os.O_TRUNC|os.O_CREATE, os.FileMode(int(0600)))
-				if err != nil {
-					log.Fatal(err.Error())
-				}
+			if v.GetString(tokenCmdToFlag) != "" {
 
 				tokenAsBytes, _ := json.Marshal(proxy.Session.Token)
 				tokenAsString := string(tokenAsBytes)
-				file.WriteString(tokenAsString)
+				err := utils.WriteAllText(tokenAsString)
 
-				if err := file.Close(); err != nil {
-					log.Fatal(err.Error())
-				}
 			}
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
