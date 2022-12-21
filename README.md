@@ -16,7 +16,18 @@ Strongly inspired by:
 
 > Application relies of existence of configuration json file named <em>config.json</em> stored in default location (place from application were started). You can override it easily by passing its custom path and custom name through the command line. Configuration file is meant to store sensitive values like secrets, password so please keep them secret. 
 
+```
+{
+    "username": "",
+    "password": "",
+    "clientId": "",
+    "clientSecret": ""
+}
+```
+
 ## Prerequisites
+
+From dev perspective
 - Delve debugger installed
 - Linters and other tools are in place
 ```
@@ -24,6 +35,9 @@ go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
 go install golang.org/x/lint/golint@latest
 go install golang.org/x/tools/cmd/goimports@latest
 ```
+
+From runtime perspective
+- config.json file in place
 
 ## Other resources you may find useful
 - https://home.mycloud.com
@@ -34,8 +48,9 @@ go install golang.org/x/tools/cmd/goimports@latest
 ## How to
 
 ```
-./my-cloud-home-go token --as="./token"
+./my-cloud-home-go token --to="./token"
 token=`cat token`
-echo $token
-./my-cloud-home-go refresh-token -t=$(echo $token)
+./my-cloud-home-go refresh-token --token=$(echo $token)
+# or
+./my-cloud-home-go refresh-token --from=./token
 ```
