@@ -56,12 +56,12 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 				log.Fatal("empty proxy object")
 			}
 
-			if v.GetBool(jwtCmdDecodeIdTokenFlag) {
+			if v.GetBool(jwtCmdName + "." + jwtCmdDecodeIdTokenFlag) {
 				claims, _ := mch.DecodeToken(proxy.Session.Token.IdToken)
 				fmt.Print(claims)
 			}
 
-			if v.GetBool(jwtCmdDecodeAccessTokenFlag) {
+			if v.GetBool(jwtCmdName + "." + jwtCmdDecodeAccessTokenFlag) {
 				claims, _ := mch.DecodeToken(proxy.Session.Token.AccessToken)
 				fmt.Print(claims)
 			}
@@ -78,10 +78,10 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 	jwtCmd.Flags().String(jwtCmdFromFlag, "", "Token file")
 	jwtCmd.MarkFlagsMutuallyExclusive(jwtCmdTokenFlag, jwtCmdFromFlag)
 
-	v.BindPFlag(jwtCmdDecodeIdTokenFlag, jwtCmd.Flags().Lookup(jwtCmdDecodeIdTokenFlag))
-	v.BindPFlag(jwtCmdDecodeAccessTokenFlag, jwtCmd.Flags().Lookup(jwtCmdDecodeAccessTokenFlag))
-	v.BindPFlag(jwtCmdTokenFlag, jwtCmd.Flags().Lookup(jwtCmdTokenFlag))
-	v.BindPFlag(jwtCmdFromFlag, jwtCmd.Flags().Lookup(jwtCmdFromFlag))
+	v.BindPFlag(jwtCmdName+"."+jwtCmdDecodeIdTokenFlag, jwtCmd.Flags().Lookup(jwtCmdDecodeIdTokenFlag))
+	v.BindPFlag(jwtCmdName+"."+jwtCmdDecodeAccessTokenFlag, jwtCmd.Flags().Lookup(jwtCmdDecodeAccessTokenFlag))
+	v.BindPFlag(jwtCmdName+"."+jwtCmdTokenFlag, jwtCmd.Flags().Lookup(jwtCmdTokenFlag))
+	v.BindPFlag(jwtCmdName+"."+jwtCmdFromFlag, jwtCmd.Flags().Lookup(jwtCmdFromFlag))
 
 	return jwtCmd
 }

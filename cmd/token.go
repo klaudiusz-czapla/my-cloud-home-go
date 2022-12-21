@@ -43,7 +43,7 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 
-			var tokenFilePath = v.GetString(tokenCmdToFlag)
+			var tokenFilePath = v.GetString(tokenCmdName + "." + tokenCmdToFlag)
 
 			proxy, err := GetProxyFromContext(cmd.Context())
 			if err != nil {
@@ -70,7 +70,7 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 
 	tokenCmd.Flags().String(tokenCmdToFlag, "", "Token file")
 
-	v.BindPFlag(tokenCmdToFlag, tokenCmd.Flags().Lookup(tokenCmdToFlag))
+	v.BindPFlag(tokenCmdName+"."+tokenCmdToFlag, tokenCmd.Flags().Lookup(tokenCmdToFlag))
 
 	return tokenCmd
 }

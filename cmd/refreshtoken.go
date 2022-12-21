@@ -34,8 +34,8 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 
-			var tokenFilePath = v.GetString(refreshCmdFromFlag)
-			var token = v.GetString(refreshCmdTokenFlag)
+			var tokenFilePath = v.GetString(refreshTokenCmdName + "." + refreshCmdFromFlag)
+			var token = v.GetString(refreshTokenCmdName + "." + refreshCmdTokenFlag)
 
 			proxy, err := CreateProxyForToken(ac, tokenFilePath, token)
 			if err != nil {
@@ -68,12 +68,12 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 		},
 	}
 
-	refreshTokenCmd.Flags().String(refreshCmdTokenFlag, "", "Token.")
+	refreshTokenCmd.Flags().String(refreshCmdTokenFlag, "", "Token")
 	refreshTokenCmd.Flags().String(refreshCmdFromFlag, "", "Token file")
 	refreshTokenCmd.MarkFlagsMutuallyExclusive(refreshCmdTokenFlag, refreshCmdFromFlag)
 
-	v.BindPFlag(refreshCmdTokenFlag, refreshTokenCmd.Flags().Lookup(refreshCmdTokenFlag))
-	v.BindPFlag(refreshCmdFromFlag, refreshTokenCmd.Flags().Lookup(refreshCmdFromFlag))
+	v.BindPFlag(refreshTokenCmdName+"."+refreshCmdTokenFlag, refreshTokenCmd.Flags().Lookup(refreshCmdTokenFlag))
+	v.BindPFlag(refreshTokenCmdName+"."+refreshCmdFromFlag, refreshTokenCmd.Flags().Lookup(refreshCmdFromFlag))
 
 	return refreshTokenCmd
 }
