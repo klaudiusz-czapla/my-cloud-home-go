@@ -38,6 +38,9 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 			var token = v.GetString(refreshCmdTokenFlag)
 
 			proxy, err := CreateProxyForToken(ac, tokenFilePath, token)
+			if err != nil {
+				log.Fatal(err.Error())
+			}
 
 			err = proxy.Relogin(ac.ClientId, ac.ClientSecret)
 			if err != nil {

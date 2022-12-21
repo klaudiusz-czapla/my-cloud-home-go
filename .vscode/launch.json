@@ -45,7 +45,7 @@
             "args": ["refresh-token", "--from=./token"]
         },
         {
-            "name": "Decode id token",
+            "name": "Decode id token received from execution of token parent command",
             "type": "go",
             "request": "launch",
             "mode": "auto",
