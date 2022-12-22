@@ -1,16 +1,9 @@
-package models
+package mch
 
 import (
 	"encoding/json"
 	"net/http"
 )
-
-type MchConfig struct {
-	Data struct {
-		ConfigurationID string                            `json:"configurationId"`
-		ComponentMap    map[string]map[string]interface{} `json:"componentMap"`
-	} `json:"data"`
-}
 
 const (
 	configUrl = "https://config.mycloud.com/config/v1/config"

@@ -9,7 +9,6 @@ import (
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
-	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/models"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
 	cmd "github.com/spf13/cobra"
 )

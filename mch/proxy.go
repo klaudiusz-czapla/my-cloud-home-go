@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/models"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/serde"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/utils"
 )
 
@@ -17,7 +17,7 @@ type MchProxy struct {
 }
 
 func Login(clientId string, clientSecret string, username string, password string) (*MchProxy, error) {
-	config, err := models.GetConfiguration()
+	config, err := serde.GetConfiguration()
 	if err != nil {
 		return nil, err
 	}
@@ -147,55 +147,4 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 	mp.Session.Token = &token
 
 	return nil
-}
-
-func (mp *MchProxy) GetUserInfo() (string, error) {
-
-	session := mp.Session
-	token := session.Token
-
-	addr := fmt.Sprintf("%s/authservice/v1/user/userinfo",
-		session.Config.GetString("cloud.service.urls", "service.auth.url"))
-
-	// which token to choose ?
-	var tokenAsString = token.AccessToken
-	var bearer = "Bearer " + tokenAsString
-
-	req, _ := http.NewRequest("GET", addr, nil)
-	req.Header.Add("Authorization", bearer)
-
-	res, err := mp.HttpClient.Do(req)
-	if err != nil {
-		return "", nil
-	}
-
-	b, _ := io.ReadAll(res.Body)
-	s := string(b)
-
-	return s, nil
-}
-
-func (mp *MchProxy) GetUserInfoForUser(username string) (string, error) {
-
-	session := mp.Session
-	token := session.Token
-
-	addr := fmt.Sprintf("%s/authservice/v2/auth0/user?email=%s",
-		session.Config.GetString("cloud.service.urls", "service.auth.url"),
-		username)
-
-	var tokenAsString = token.AccessToken
-	var bearer = "Bearer " + tokenAsString
-
-	req, _ := http.NewRequest("GET", addr, nil)
-	req.Header.Add("Authorization", bearer)
-
-	res, err := mp.HttpClient.Do(req)
-	if err != nil {
-		return "", nil
-	}
-
-	b, _ := io.ReadAll(res.Body)
-
-	return string(b), nil
 }

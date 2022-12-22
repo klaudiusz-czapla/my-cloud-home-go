@@ -1,4 +1,4 @@
-package models
+package serde
 
 type MchToken struct {
 	IdToken      string `json:"id_token"`
