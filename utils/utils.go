@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"strings"
 )
 
 // Determines whether the specified file exists.
@@ -61,12 +62,24 @@ func IfFn[T any](fn func() bool, a, b T) T {
 	return b
 }
 
-func FromJson[T any](j string) (*any, error) {
+func FromJson[T any](j string) (*T, error) {
 
 	bytesArr := []byte(j)
 
-	var v any
+	var v T
 	err := json.Unmarshal(bytesArr, &v)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &v, nil
+}
+
+func DecodeFromJson[T any](j string) (*T, error) {
+
+	var v T
+	err := json.NewDecoder(strings.NewReader(j)).Decode(&v)
 
 	if err != nil {
 		return nil, err
