@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/models"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/utils"
 )
 
 type MchProxy struct {
@@ -62,12 +63,21 @@ func Login(clientId string, clientSecret string, username string, password strin
 		return &MchProxy{Session: &MchSession{Config: config}}, err
 	}
 
+	session := MchSession{
+		Config: config,
+		Token:  &token,
+	}
+
+	_, idTokenPayload, err := utils.DecodeIdToken(token.IdToken)
+	if err != nil {
+		return nil, err
+	}
+
+	session.UserId = idTokenPayload.Sub
+
 	return &MchProxy{
 		HttpClient: &httpClient,
-		Session: &MchSession{
-			Config: config,
-			Token:  &token,
-		},
+		Session:    &session,
 	}, nil
 }
 
@@ -86,6 +96,8 @@ func NewProxyFromConfig(config *models.MchConfig, token *models.MchToken) *MchPr
 	proxy.Session = &MchSession{}
 	proxy.Session.Config = config
 	proxy.Session.Token = token
+	// will be set after being authenticated..
+	proxy.Session.UserId = "<unknown>"
 	return &proxy
 }
 
@@ -158,8 +170,9 @@ func (mp *MchProxy) GetUserInfo() (string, error) {
 	}
 
 	b, _ := io.ReadAll(res.Body)
+	s := string(b)
 
-	return string(b), nil
+	return s, nil
 }
 
 func (mp *MchProxy) GetUserInfoForUser(username string) (string, error) {
