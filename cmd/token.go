@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/klaudiusz-czapla/my-cloud-home-go/common"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -20,7 +20,7 @@ const (
 
 func InitTokenCommand(v *viper.Viper) *cobra.Command {
 
-	ac, err := common.NewAppConfigFromViper(v)
+	ac, err := config.NewAppConfigFromViper(v)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

@@ -79,7 +79,8 @@ func FromJson[T any](j string) (*T, error) {
 func DecodeFromJson[T any](j string) (*T, error) {
 
 	var v T
-	err := json.NewDecoder(strings.NewReader(j)).Decode(&v)
+	reader := strings.NewReader(j)
+	err := json.NewDecoder(reader).Decode(&v)
 
 	if err != nil {
 		return nil, err
@@ -88,7 +89,7 @@ func DecodeFromJson[T any](j string) (*T, error) {
 	return &v, nil
 }
 
-func ToJson[T any](v any) (string, error) {
+func ToJson[T any](v *T) (string, error) {
 
 	m, err := json.Marshal(v)
 	if err != nil {

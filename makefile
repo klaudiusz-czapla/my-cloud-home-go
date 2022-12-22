@@ -3,6 +3,9 @@
 fmt:
 	goimports -l -w . && go fmt .
 
+test:
+	go test ./...
+
 lint: fmt
 	golangci-lint run .
 

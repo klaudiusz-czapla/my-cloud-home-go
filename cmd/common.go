@@ -7,7 +7,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/klaudiusz-czapla/my-cloud-home-go/common"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/models"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
@@ -33,7 +33,7 @@ func GetProxyFromContext(context context.Context) (*mch.MchProxy, error) {
 	return nil, nil
 }
 
-func CreateProxyForAppConfig(ac *common.AppConfig) (*mch.MchProxy, error) {
+func CreateProxyForAppConfig(ac *config.AppConfig) (*mch.MchProxy, error) {
 	p, err := mch.Login(ac.ClientId, ac.ClientSecret, ac.Username, ac.Password)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func CreateProxyForAppConfig(ac *common.AppConfig) (*mch.MchProxy, error) {
 	return p, nil
 }
 
-func GetOrCreateProxy(cmd *cmd.Command, ac *common.AppConfig) (*mch.MchProxy, error) {
+func GetOrCreateProxy(cmd *cmd.Command, ac *config.AppConfig) (*mch.MchProxy, error) {
 	proxy, err := GetProxyFromContext(cmd.Context())
 
 	if proxy != nil {
@@ -56,7 +56,7 @@ func GetOrCreateProxy(cmd *cmd.Command, ac *common.AppConfig) (*mch.MchProxy, er
 	return CreateProxyForAppConfig(ac)
 }
 
-func CreateProxyForToken(ac *common.AppConfig, tokenFilePath string, token string) (*mch.MchProxy, error) {
+func CreateProxyForToken(ac *config.AppConfig, tokenFilePath string, token string) (*mch.MchProxy, error) {
 
 	var tokenString = ""
 
