@@ -10,14 +10,13 @@ import (
 
 func DecodeToken(tokenString string) (*jwt.MapClaims, *models.IdTokenPayload, error) {
 	claims := jwt.MapClaims{}
-	token, parts, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
+	_, _, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
 
 	if err != nil {
 		return nil, nil, err
 	}
 
-	fmt.Print(token)
-	fmt.Print(parts)
+	fmt.Print(claims)
 
 	// if !token.Valid {
 	// 	return nil, fmt.Errorf("passed token is not valid")

@@ -22,8 +22,8 @@ func main() {
 	configCmd := cmd.InitConfigCommand()
 	tokenCmd := cmd.InitTokenCommand(v)
 	refreshTokenCmd := cmd.InitRefreshTokenCommand(v)
-	jwtCmd := cmd.InitJwtCommand(v)
-	tokenJwtCmd := cmd.InitJwtCommand(v)
+	jwtCmd := cmd.InitJwtCommand(v, nil)
+	tokenJwtCmd := cmd.InitJwtCommand(v, tokenCmd)
 	userInfoCmd := cmd.InitUserInfoCommand(v)
 
 	rootCmd.AddCommand(versionCmd)

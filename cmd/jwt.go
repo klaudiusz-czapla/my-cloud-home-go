@@ -23,7 +23,15 @@ const (
 // jwt command can be subcommand for token (parent) command
 // at the same time it can be standalone command - in that case all input parameters will be processed directly here
 // instead of relying on getting context with expected value from parent command
-func InitJwtCommand(v *viper.Viper) *cobra.Command {
+func InitJwtCommand(v *viper.Viper, parent *cobra.Command) *cobra.Command {
+
+	buildFlagName := func(f string) string {
+		if parent == nil {
+			return jwtCmdName + "." + f
+		} else {
+			return parent.Use + "." + jwtCmdName + "." + f
+		}
+	}
 
 	ac, err := common.NewAppConfigFromViper(v)
 	if err != nil {
@@ -50,19 +58,25 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 				}
 
 			} else {
-				CreateProxyForToken(ac, v.GetString(jwtCmdName+"."+jwtCmdTokenFlag), v.GetString(jwtCmdName+"."+jwtCmdFromFlag))
+				proxy, err = CreateProxyForToken(
+					ac,
+					v.GetString(buildFlagName(jwtCmdFromFlag)),
+					v.GetString(buildFlagName(jwtCmdTokenFlag)))
+				if err != nil {
+					log.Fatal(err.Error())
+				}
 			}
 
 			if proxy == nil {
 				log.Fatal("empty proxy object")
 			}
 
-			if v.GetBool(jwtCmdName + "." + jwtCmdDecodeIdTokenFlag) {
+			if v.GetBool(buildFlagName(jwtCmdDecodeIdTokenFlag)) {
 				claims, _, _ := utils.DecodeToken(proxy.Session.Token.IdToken)
 				fmt.Print(claims)
 			}
 
-			if v.GetBool(jwtCmdName + "." + jwtCmdDecodeAccessTokenFlag) {
+			if v.GetBool(buildFlagName(jwtCmdDecodeAccessTokenFlag)) {
 				claims, _, _ := utils.DecodeToken(proxy.Session.Token.AccessToken)
 				fmt.Print(claims)
 			}
@@ -75,14 +89,14 @@ func InitJwtCommand(v *viper.Viper) *cobra.Command {
 
 	jwtCmd.Flags().Bool(jwtCmdDecodeIdTokenFlag, false, "Decode id token.")
 	jwtCmd.Flags().Bool(jwtCmdDecodeAccessTokenFlag, false, "Decode access token.")
-	jwtCmd.Flags().String(jwtCmdTokenFlag, "", "Token.")
+	jwtCmd.Flags().String(jwtCmdTokenFlag, "", "Token")
 	jwtCmd.Flags().String(jwtCmdFromFlag, "", "Token file")
 	jwtCmd.MarkFlagsMutuallyExclusive(jwtCmdTokenFlag, jwtCmdFromFlag)
 
-	v.BindPFlag(jwtCmdName+"."+jwtCmdDecodeIdTokenFlag, jwtCmd.Flags().Lookup(jwtCmdDecodeIdTokenFlag))
-	v.BindPFlag(jwtCmdName+"."+jwtCmdDecodeAccessTokenFlag, jwtCmd.Flags().Lookup(jwtCmdDecodeAccessTokenFlag))
-	v.BindPFlag(jwtCmdName+"."+jwtCmdTokenFlag, jwtCmd.Flags().Lookup(jwtCmdTokenFlag))
-	v.BindPFlag(jwtCmdName+"."+jwtCmdFromFlag, jwtCmd.Flags().Lookup(jwtCmdFromFlag))
+	v.BindPFlag(buildFlagName(jwtCmdDecodeIdTokenFlag), jwtCmd.Flags().Lookup(jwtCmdDecodeIdTokenFlag))
+	v.BindPFlag(buildFlagName(jwtCmdDecodeAccessTokenFlag), jwtCmd.Flags().Lookup(jwtCmdDecodeAccessTokenFlag))
+	v.BindPFlag(buildFlagName(jwtCmdTokenFlag), jwtCmd.Flags().Lookup(jwtCmdTokenFlag))
+	v.BindPFlag(buildFlagName(jwtCmdFromFlag), jwtCmd.Flags().Lookup(jwtCmdFromFlag))
 
 	return jwtCmd
 }
