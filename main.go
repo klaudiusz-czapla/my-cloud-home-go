@@ -24,12 +24,14 @@ func main() {
 	refreshTokenCmd := cmd.InitRefreshTokenCommand(v)
 	jwtCmd := cmd.InitJwtCommand(v)
 	tokenJwtCmd := cmd.InitJwtCommand(v)
+	userInfoCmd := cmd.InitUserInfoCommand(v)
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(tokenCmd)
 	rootCmd.AddCommand(refreshTokenCmd)
 	rootCmd.AddCommand(jwtCmd)
+	rootCmd.AddCommand(userInfoCmd)
 
 	tokenCmd.AddCommand(tokenJwtCmd)
 

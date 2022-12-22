@@ -16,20 +16,6 @@ type MchProxy struct {
 	Session    *MchSession
 }
 
-type MchSession struct {
-	Config *MchConfig
-	Token  *MchToken
-}
-
-type MchToken struct {
-	IdToken      string `json:"id_token"`
-	Scope        string `json:"scope"`
-	RefreshToken string `json:"refresh_token"`
-	AccessToken  string `json:"access_token"`
-	TokenType    string `json:"token_type"`
-	ExpiresIn    int32  `json:"expires_in"`
-}
-
 func Login(clientId string, clientSecret string, username string, password string) (*MchProxy, error) {
 	config, err := GetConfiguration()
 	if err != nil {
@@ -150,6 +136,56 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 	mp.Session.Token = &token
 
 	return nil
+}
+
+func (mp *MchProxy) GetUserInfo() (string, error) {
+
+	session := mp.Session
+	token := session.Token
+
+	addr := fmt.Sprintf("%s/authservice/v1/user/userinfo",
+		session.Config.GetString("cloud.service.urls", "service.auth.url"))
+
+	// which token to choose ?
+	var tokenAsString = token.AccessToken
+	var bearer = "Bearer " + tokenAsString
+
+	req, _ := http.NewRequest("GET", addr, nil)
+	req.Header.Add("Authorization", bearer)
+
+	res, err := mp.HttpClient.Do(req)
+	if err != nil {
+		return "", nil
+	}
+
+	b, _ := io.ReadAll(res.Body)
+
+	return string(b), nil
+}
+
+func (mp *MchProxy) GetUserInfoForUser(username string) (string, error) {
+
+	session := mp.Session
+	token := session.Token
+
+	addr := fmt.Sprintf("%s/authservice/v2/auth0/user?email=%s",
+		session.Config.GetString("cloud.service.urls", "service.auth.url"),
+		username)
+
+	var tokenAsString = token.AccessToken
+	var bearer = "Bearer " + tokenAsString
+
+	req, _ := http.NewRequest("GET", addr, nil)
+	req.Header.Add("Authorization", bearer)
+
+	res, err := mp.HttpClient.Do(req)
+	if err != nil {
+		return "", nil
+	}
+
+	b, _ := io.ReadAll(res.Body)
+
+	return string(b), nil
 }
 
 func DecodeToken(tokenString string) (*jwt.MapClaims, *IdTokenPayload, error) {

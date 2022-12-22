@@ -68,5 +68,13 @@
             "program": "${workspaceFolder}",
             "args": ["jwt", "--decode-id-token", "--token=abc"]
         },
+        {
+            "name": "Fetch user info",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "args": ["user-info", "--from=./token"]
+        },
     ]
 }
