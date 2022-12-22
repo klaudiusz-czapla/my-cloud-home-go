@@ -140,54 +140,29 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 
 func (mp *MchProxy) GetUserInfo(username string) error {
 
+	session := mp.Session
+	token := session.Token
+
 	addr := fmt.Sprintf("%s/authservice/v2/auth0/user?email=%s",
 		session.Config.GetString("cloud.service.urls", "service.auth0.url"),
 		username)
 
-	var bearer = "Bearer " + "<todo>"
+	var tokenAsString, err = ToJson[*MchToken](token)
+	if err != nil {
+		return err
+	}
 
-	// Create a new request using http
-	req, err := http.NewRequest("GET", addr, nil)
+	var bearer = "Bearer " + tokenAsString
 
-	// add authorization header to the req
+	req, _ := http.NewRequest("GET", addr, nil)
 	req.Header.Add("Authorization", bearer)
 
-	resp, err := mp.HttpClient.Do(req)
+	res, err := mp.HttpClient.Do(req)
 
-	// data, err := json.Marshal(req)
-	// if err != nil {
-	// 	return err
-	// }
+	b, _ := io.ReadAll(res.Body)
+	fmt.Print(string(b))
 
-	// httpClient := mp.HttpClient
-	// res, err := httpClient.Post(
-	// 	,
-	// 	"application/json",
-	// 	bytes.NewBuffer(data),
-	// )
-	// if err != nil {
-	// 	return err
-	// }
-	// defer res.Body.Close()
-
-	// if !(res.StatusCode >= 200 && res.StatusCode <= 299) {
-	// 	return fmt.Errorf("status code %d has been received from %s", res.StatusCode, res.Request.URL)
-	// }
-
-	// b, _ := io.ReadAll(res.Body)
-	// fmt.Print(string(b))
-	// res.Body = io.NopCloser(bytes.NewBuffer(b))
-
-	// var token MchToken
-	// err = json.NewDecoder(res.Body).Decode(&token)
-	// if err != nil {
-	// 	return err
-	// }
-
-	// // exchange old token to the new one
-	// mp.Session.Token = &token
-
-	// return nil
+	return err
 }
 
 func DecodeToken(tokenString string) (*jwt.MapClaims, *IdTokenPayload, error) {
