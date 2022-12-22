@@ -1,4 +1,4 @@
-package mch
+package models
 
 import (
 	"encoding/json"

@@ -1,6 +1,8 @@
 package mch
 
+import "github.com/klaudiusz-czapla/my-cloud-home-go/mch/models"
+
 type MchSession struct {
-	Config *MchConfig
-	Token  *MchToken
+	Config *models.MchConfig
+	Token  *models.MchToken
 }

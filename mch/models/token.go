@@ -1,4 +1,4 @@
-package mch
+package models
 
 type MchToken struct {
 	IdToken      string `json:"id_token"`

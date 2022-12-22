@@ -9,6 +9,7 @@ import (
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/common"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/models"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
 	cmd "github.com/spf13/cobra"
 )
@@ -71,7 +72,7 @@ func CreateProxyForToken(ac *common.AppConfig, tokenFilePath string, token strin
 		log.Fatalf("token file path and token cannot be both empty. Either the first one or the second parameter has to be set to some non-empty value")
 	}
 
-	var mt mch.MchToken
+	var mt models.MchToken
 	err := json.NewDecoder(strings.NewReader(tokenString)).Decode(&mt)
 	if err != nil {
 		return nil, err

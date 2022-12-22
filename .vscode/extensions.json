@@ -1,5 +1,8 @@
 {
     "recommendations": [
-        "golang.go"
+        "golang.go",
+        "jflbr.jwt-decoder",
+        "quicktype.quicktype",
+        "mohsen1.prettify-json"
     ]
 }

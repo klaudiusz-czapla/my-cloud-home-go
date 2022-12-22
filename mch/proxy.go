@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/models"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -17,7 +18,7 @@ type MchProxy struct {
 }
 
 func Login(clientId string, clientSecret string, username string, password string) (*MchProxy, error) {
-	config, err := GetConfiguration()
+	config, err := models.GetConfiguration()
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +57,7 @@ func Login(clientId string, clientSecret string, username string, password strin
 		return &MchProxy{Session: &MchSession{Config: config}}, fmt.Errorf("invalid status code %d has been received from %s", res.StatusCode, res.Request.URL)
 	}
 
-	var token MchToken
+	var token models.MchToken
 	err = json.NewDecoder(res.Body).Decode(&token)
 
 	if err != nil {
@@ -72,8 +73,8 @@ func Login(clientId string, clientSecret string, username string, password strin
 	}, nil
 }
 
-func NewProxy(token *MchToken) (*MchProxy, error) {
-	config, err := GetConfiguration()
+func NewProxy(token *models.MchToken) (*MchProxy, error) {
+	config, err := models.GetConfiguration()
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +82,7 @@ func NewProxy(token *MchToken) (*MchProxy, error) {
 	return NewProxyFromConfig(config, token), nil
 }
 
-func NewProxyFromConfig(config *MchConfig, token *MchToken) *MchProxy {
+func NewProxyFromConfig(config *models.MchConfig, token *models.MchToken) *MchProxy {
 	var proxy = MchProxy{}
 	proxy.HttpClient = &http.Client{}
 	proxy.Session = &MchSession{}
@@ -126,7 +127,7 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 	fmt.Print(string(b))
 	res.Body = io.NopCloser(bytes.NewBuffer(b))
 
-	var token MchToken
+	var token models.MchToken
 	err = json.NewDecoder(res.Body).Decode(&token)
 	if err != nil {
 		return err
@@ -188,7 +189,7 @@ func (mp *MchProxy) GetUserInfoForUser(username string) (string, error) {
 	return string(b), nil
 }
 
-func DecodeToken(tokenString string) (*jwt.MapClaims, *IdTokenPayload, error) {
+func DecodeToken(tokenString string) (*jwt.MapClaims, *models.IdTokenPayload, error) {
 	claims := jwt.MapClaims{}
 	token, parts, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
 
@@ -207,7 +208,7 @@ func DecodeToken(tokenString string) (*jwt.MapClaims, *IdTokenPayload, error) {
 		return nil, nil, fmt.Errorf("claims inside the token are not valid")
 	}
 
-	var idTokenPayload = IdTokenPayload{}
+	var idTokenPayload = models.IdTokenPayload{}
 	mapstructure.Decode(claims, &idTokenPayload)
 
 	return &claims, &idTokenPayload, nil
