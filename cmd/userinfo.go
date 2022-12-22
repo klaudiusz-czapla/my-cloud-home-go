@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/common"
@@ -36,7 +37,13 @@ func InitUserInfoCommand(v *viper.Viper) *cobra.Command {
 			if err != nil {
 				log.Fatal(err.Error())
 			}
-			_ = proxy.GetUserInfo(ac.Username)
+
+			userinfo, err := proxy.GetUserInfo()
+			if err != nil {
+				log.Fatal(err.Error())
+			}
+
+			fmt.Print(userinfo)
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
 			log.Printf("command '%s' has been executed..", userInfoCmdName)
