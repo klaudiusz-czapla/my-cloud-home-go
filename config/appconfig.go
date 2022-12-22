@@ -1,6 +1,9 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
+	"github.com/spf13/viper"
+)
 
 type AppConfig struct {
 	ClientId     string `json:"clientId"`
@@ -17,4 +20,13 @@ func NewAppConfigFromViper(v *viper.Viper) (*AppConfig, error) {
 	}
 
 	return ac, nil
+}
+
+func NewAppConfigFromJsonFile(jsonFilePath string) (*AppConfig, error) {
+	json, err := utils.ReadAllText(jsonFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	return utils.FromJson[AppConfig](json)
 }
