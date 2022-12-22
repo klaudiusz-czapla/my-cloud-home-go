@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 )
@@ -67,6 +69,21 @@ func FromJson[T any](j string) (*any, error) {
 
 	var v any
 	err := json.Unmarshal(bytesArr, &v)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &v, nil
+}
+
+func DecodeFromJson[T any](j string) (*any, error) {
+
+	bytesArr := []byte(j)
+	readCloser := io.NopCloser(bytes.NewBuffer(bytesArr))
+
+	var v any
+	err := json.NewDecoder(readCloser).Decode(&v)
 
 	if err != nil {
 		return nil, err
