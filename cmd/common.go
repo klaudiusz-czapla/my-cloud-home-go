@@ -9,8 +9,9 @@ import (
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/serde"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
-	cmd "github.com/spf13/cobra"
+	"github.com/spf13/cobra"
 )
 
 type ContextKey string
@@ -41,7 +42,7 @@ func CreateProxyForAppConfig(ac *config.AppConfig) (*mch.MchProxy, error) {
 	return p, nil
 }
 
-func GetOrCreateProxy(cmd *cmd.Command, ac *config.AppConfig) (*mch.MchProxy, error) {
+func GetOrCreateProxy(cmd *cobra.Command, ac *config.AppConfig) (*mch.MchProxy, error) {
 	proxy, err := GetProxyFromContext(cmd.Context())
 
 	if proxy != nil {
@@ -71,7 +72,7 @@ func CreateProxyForToken(ac *config.AppConfig, tokenFilePath string, token strin
 		log.Fatalf("token file path and token cannot be both empty. Either the first one or the second parameter has to be set to some non-empty value")
 	}
 
-	var mt models.MchToken
+	var mt serde.MchToken
 	err := json.NewDecoder(strings.NewReader(tokenString)).Decode(&mt)
 	if err != nil {
 		return nil, err

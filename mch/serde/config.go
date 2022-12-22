@@ -6,3 +6,7 @@ type MchConfig struct {
 		ComponentMap    map[string]map[string]interface{} `json:"componentMap"`
 	} `json:"data"`
 }
+
+func (c *MchConfig) GetString(section, config string) string {
+	return c.Data.ComponentMap[section][config].(string)
+}

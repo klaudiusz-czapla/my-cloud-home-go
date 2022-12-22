@@ -17,7 +17,7 @@ type MchProxy struct {
 }
 
 func Login(clientId string, clientSecret string, username string, password string) (*MchProxy, error) {
-	config, err := serde.GetConfiguration()
+	config, err := GetConfiguration()
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func Login(clientId string, clientSecret string, username string, password strin
 		return &MchProxy{Session: &MchSession{Config: config}}, fmt.Errorf("invalid status code %d has been received from %s", res.StatusCode, res.Request.URL)
 	}
 
-	var token models.MchToken
+	var token serde.MchToken
 	err = json.NewDecoder(res.Body).Decode(&token)
 
 	if err != nil {
@@ -81,8 +81,8 @@ func Login(clientId string, clientSecret string, username string, password strin
 	}, nil
 }
 
-func NewProxy(token *models.MchToken) (*MchProxy, error) {
-	config, err := models.GetConfiguration()
+func NewProxy(token *serde.MchToken) (*MchProxy, error) {
+	config, err := GetConfiguration()
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func NewProxy(token *models.MchToken) (*MchProxy, error) {
 	return NewProxyFromConfig(config, token), nil
 }
 
-func NewProxyFromConfig(config *models.MchConfig, token *models.MchToken) *MchProxy {
+func NewProxyFromConfig(config *serde.MchConfig, token *serde.MchToken) *MchProxy {
 	var proxy = MchProxy{}
 	proxy.HttpClient = &http.Client{}
 	proxy.Session = &MchSession{}
@@ -137,7 +137,7 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 	fmt.Print(string(b))
 	res.Body = io.NopCloser(bytes.NewBuffer(b))
 
-	var token models.MchToken
+	var token serde.MchToken
 	err = json.NewDecoder(res.Body).Decode(&token)
 	if err != nil {
 		return err
