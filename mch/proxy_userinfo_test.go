@@ -47,7 +47,7 @@ func TestUserInfoForUser(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	userInfo, err := proxy.GetUserInfoForUser(username)
+	userInfo, err := proxy.GetUserInfoByUserName(username)
 	if err != nil {
 		t.Error(err.Error())
 	}

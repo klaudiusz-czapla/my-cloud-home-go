@@ -40,7 +40,7 @@ func InitDeviceInfoCommand(v *viper.Viper) *cobra.Command {
 			}
 
 			userid := proxy.Session.UserId
-			deviceInfo, err := proxy.GetDeviceInfoForUser(userid)
+			deviceInfo, err := proxy.GetDeviceInfoByUser(userid)
 			if err != nil {
 				log.Fatal(err.Error())
 			}

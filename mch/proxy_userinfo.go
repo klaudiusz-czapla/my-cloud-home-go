@@ -32,7 +32,7 @@ func (mp *MchProxy) GetUserInfo() (string, error) {
 	return s, nil
 }
 
-func (mp *MchProxy) GetUserInfoForUser(username string) (string, error) {
+func (mp *MchProxy) GetUserInfoByUserName(username string) (string, error) {
 
 	session := mp.Session
 	token := session.Token

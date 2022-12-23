@@ -7,7 +7,7 @@ import (
 	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
 )
 
-func TestDeviceInfoForUser(t *testing.T) {
+func TestDeviceInfoByUser(t *testing.T) {
 
 	jsonFilePath, _ := filepath.Abs("../config.json")
 
@@ -23,7 +23,7 @@ func TestDeviceInfoForUser(t *testing.T) {
 
 	userid := proxy.Session.UserId
 
-	deviceInfo, err := proxy.GetDeviceInfoForUser(userid)
+	deviceInfo, err := proxy.GetDeviceInfoByUser(userid)
 	if err != nil {
 		t.Error(err.Error())
 	}
