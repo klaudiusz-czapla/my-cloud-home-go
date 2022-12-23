@@ -25,6 +25,7 @@ func main() {
 	jwtCmd := cmd.InitJwtCommand(v, nil)
 	tokenJwtCmd := cmd.InitJwtCommand(v, tokenCmd)
 	userInfoCmd := cmd.InitUserInfoCommand(v)
+	deviceInfoCmd := cmd.InitDeviceInfoCommand(v)
 
 	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(configCmd)
@@ -32,6 +33,7 @@ func main() {
 	rootCmd.AddCommand(refreshTokenCmd)
 	rootCmd.AddCommand(jwtCmd)
 	rootCmd.AddCommand(userInfoCmd)
+	rootCmd.AddCommand(deviceInfoCmd)
 
 	tokenCmd.AddCommand(tokenJwtCmd)
 

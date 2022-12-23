@@ -23,12 +23,12 @@ func TestDeviceInfoForUser(t *testing.T) {
 
 	userid := proxy.Session.UserId
 
-	deviceinfo, err := proxy.GetDeviceInfoForUser(userid)
+	deviceInfo, err := proxy.GetDeviceInfoForUser(userid)
 	if err != nil {
 		t.Error(err.Error())
 	}
 
-	if deviceinfo == "" {
+	if deviceInfo == "" {
 		t.Error("empty device info")
 	}
 

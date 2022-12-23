@@ -10,50 +10,51 @@ import (
 	"github.com/spf13/viper"
 )
 
-const userInfoCmdName = "user-info"
+const deviceInfoCmdName = "device-info"
 
 const (
-	userInfoCmdFromFlag = "from"
+	deviceInfoCmdFromFlag = "from"
 )
 
-func InitUserInfoCommand(v *viper.Viper) *cobra.Command {
+func InitDeviceInfoCommand(v *viper.Viper) *cobra.Command {
 
 	ac, err := config.NewAppConfigFromViper(v)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	var userInfoCmd = &cobra.Command{
-		Use:   userInfoCmdName,
-		Short: "Retrieves user info in json format",
+	var deviceInfoCmd = &cobra.Command{
+		Use:   deviceInfoCmdName,
+		Short: "Retrieves device info for currently logged-in user",
 		Long:  ``,
 		PreRun: func(cmd *cobra.Command, args []string) {
-			log.Printf("executing '%s' command..", userInfoCmdName)
+			log.Printf("executing '%s' command..", deviceInfoCmdName)
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 
-			var tokenFilePath = v.GetString(userInfoCmdName + "." + userInfoCmdFromFlag)
+			var tokenFilePath = v.GetString(deviceInfoCmdName + "." + deviceInfoCmdFromFlag)
 
 			proxy, err := mch.CreateProxyForToken(ac, tokenFilePath, "")
 			if err != nil {
 				log.Fatal(err.Error())
 			}
 
-			userInfo, err := proxy.GetUserInfo()
+			userid := proxy.Session.UserId
+			deviceInfo, err := proxy.GetDeviceInfoForUser(userid)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
 
-			fmt.Print(userInfo)
+			fmt.Print(deviceInfo)
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
 			log.Printf("command '%s' has been executed..", userInfoCmdName)
 		},
 	}
 
-	userInfoCmd.Flags().String(userInfoCmdFromFlag, "", "Token file")
+	deviceInfoCmd.Flags().String(deviceInfoCmdFromFlag, "", "Token file")
 
-	v.BindPFlag(userInfoCmdName+"."+userInfoCmdFromFlag, userInfoCmd.Flags().Lookup(userInfoCmdFromFlag))
+	v.BindPFlag(deviceInfoCmdName+"."+deviceInfoCmdFromFlag, deviceInfoCmd.Flags().Lookup(deviceInfoCmdFromFlag))
 
-	return userInfoCmd
+	return deviceInfoCmd
 }
