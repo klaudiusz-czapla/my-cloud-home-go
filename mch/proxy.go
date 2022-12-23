@@ -185,3 +185,12 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 
 	return nil
 }
+
+func (mp *MchProxy) AddAuthorizationHeader(req *http.Request) {
+
+	// session := mp.Session
+	// token := session.Token
+	// var tokenAsString = token.AccessToken
+	// var bearer = "Bearer " + tokenAsString
+
+}
