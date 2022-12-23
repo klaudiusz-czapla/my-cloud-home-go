@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -37,7 +38,7 @@ func InitRefreshTokenCommand(v *viper.Viper) *cobra.Command {
 			var tokenFilePath = v.GetString(refreshTokenCmdName + "." + refreshCmdFromFlag)
 			var token = v.GetString(refreshTokenCmdName + "." + refreshCmdTokenFlag)
 
-			proxy, err := CreateProxyForToken(ac, tokenFilePath, token)
+			proxy, err := mch.CreateProxyForToken(ac, tokenFilePath, token)
 			if err != nil {
 				log.Fatal(err.Error())
 			}

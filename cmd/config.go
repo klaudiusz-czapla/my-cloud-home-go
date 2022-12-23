@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/models"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +19,7 @@ var configCmd = &cobra.Command{
 		log.Printf("executing '%s' command..", configCmdName)
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		c, err := models.GetConfiguration()
+		c, err := mch.GetConfiguration()
 		if err != nil {
 			log.Fatal(err.Error())
 		}

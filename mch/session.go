@@ -1,9 +1,11 @@
 package mch
 
-import "github.com/klaudiusz-czapla/my-cloud-home-go/mch/models"
+import (
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/serde"
+)
 
 type MchSession struct {
-	Config *models.MchConfig
-	Token  *models.MchToken
+	Config *serde.MchConfig
+	Token  *serde.MchToken
 	UserId string
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
-	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -58,7 +57,7 @@ func InitJwtCommand(v *viper.Viper, parent *cobra.Command) *cobra.Command {
 				}
 
 			} else {
-				proxy, err = CreateProxyForToken(
+				proxy, err = mch.CreateProxyForToken(
 					ac,
 					v.GetString(buildFlagName(jwtCmdFromFlag)),
 					v.GetString(buildFlagName(jwtCmdTokenFlag)))
@@ -72,12 +71,12 @@ func InitJwtCommand(v *viper.Viper, parent *cobra.Command) *cobra.Command {
 			}
 
 			if v.GetBool(buildFlagName(jwtCmdDecodeIdTokenFlag)) {
-				claims, _, _ := utils.DecodeIdToken(proxy.Session.Token.IdToken)
+				claims, _, _ := mch.DecodeIdToken(proxy.Session.Token.IdToken)
 				fmt.Print(claims)
 			}
 
 			if v.GetBool(buildFlagName(jwtCmdDecodeAccessTokenFlag)) {
-				claims, _, _ := utils.DecodeAccessToken(proxy.Session.Token.AccessToken)
+				claims, _, _ := mch.DecodeAccessToken(proxy.Session.Token.AccessToken)
 				fmt.Print(claims)
 			}
 
