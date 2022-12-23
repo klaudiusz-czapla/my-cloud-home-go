@@ -30,3 +30,30 @@ func TestUserInfo(t *testing.T) {
 		t.Error("empty user info")
 	}
 }
+
+func TestUserInfoForUser(t *testing.T) {
+
+	jsonFilePath, _ := filepath.Abs("../config.json")
+
+	ac, err := config.NewAppConfigFromJsonFile(jsonFilePath)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	username := ac.Username
+
+	proxy, err := CreateProxyForAppConfig(ac)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	userInfo, err := proxy.GetUserInfoForUser(username)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	if userInfo == "" {
+		t.Error("empty user info")
+	}
+
+}

@@ -19,6 +19,26 @@ type MchProxy struct {
 	Session    *MchSession
 }
 
+func NewProxy(token *serde.MchToken) (*MchProxy, error) {
+	config, err := GetConfiguration()
+	if err != nil {
+		return nil, err
+	}
+
+	return NewProxyFromConfig(config, token), nil
+}
+
+func NewProxyFromConfig(config *serde.MchConfig, token *serde.MchToken) *MchProxy {
+	var proxy = MchProxy{}
+	proxy.HttpClient = &http.Client{}
+	proxy.Session = &MchSession{}
+	proxy.Session.Config = config
+	proxy.Session.Token = token
+	// will be set after being authenticated..
+	proxy.Session.UserId = "<unknown>"
+	return &proxy
+}
+
 func CreateProxyForAppConfig(ac *config.AppConfig) (*MchProxy, error) {
 	p, err := Login(ac.ClientId, ac.ClientSecret, ac.Username, ac.Password)
 	if err != nil {
@@ -116,26 +136,6 @@ func Login(clientId string, clientSecret string, username string, password strin
 		HttpClient: &httpClient,
 		Session:    &session,
 	}, nil
-}
-
-func NewProxy(token *serde.MchToken) (*MchProxy, error) {
-	config, err := GetConfiguration()
-	if err != nil {
-		return nil, err
-	}
-
-	return NewProxyFromConfig(config, token), nil
-}
-
-func NewProxyFromConfig(config *serde.MchConfig, token *serde.MchToken) *MchProxy {
-	var proxy = MchProxy{}
-	proxy.HttpClient = &http.Client{}
-	proxy.Session = &MchSession{}
-	proxy.Session.Config = config
-	proxy.Session.Token = token
-	// will be set after being authenticated..
-	proxy.Session.UserId = "<unknown>"
-	return &proxy
 }
 
 func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
