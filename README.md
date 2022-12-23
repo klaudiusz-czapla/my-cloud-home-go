@@ -1,6 +1,6 @@
 # WD My Cloud Home CLI
 
-Aim of that project is to implement translation layer between WD My Cloud Home Rest API and fuse. Thanks to that it will be possible to mount WD My Cloud Home device in the same way like any other file(s)/disk(s)/NAS device(s).
+Aim of that project is to implement translation layer between WD My Cloud Home Rest API and fuse. Thanks to that it will be possible to mount WD My Cloud Home device in the same way like any other network storage devices.
 
 Besides that majority of the app functionality will be also available to the user in the form of CLI commands (based on the cobra library). This also allows to reduce number of tests needed because each use case, each command can be tested from the terminal beforehand.
 
@@ -10,7 +10,7 @@ Strongly inspired by:
 - https://github.com/mnencia/mchfuse
 - https://github.com/uname-yang/mycloudhome
 
-> Thoughest part was done by the authors of libraries mentioned above - as of now documentation for WD My Cloud REST Api does not exist anywhere in public. 
+> Thoughest part was done by the authors of libraries mentioned above - as of now documentation for WD My Cloud REST Api does not exist anywhere in public.
 
 > Security concerns at least for now are totally not in scope of the development (credentials in configuration files). User responsibility is to keep them secret.
 
