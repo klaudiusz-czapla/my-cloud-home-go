@@ -131,6 +131,8 @@ func Login(clientId string, clientSecret string, username string, password strin
 	}
 
 	session.UserId = idTokenPayload.Sub
+	// token denormalization
+	// ... TODO
 
 	return &MchProxy{
 		HttpClient: &httpClient,
@@ -182,6 +184,8 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 
 	// exchange old token to the new one
 	mp.Session.Token = &token
+	// token denormalization
+	// ... TODO
 
 	return nil
 }

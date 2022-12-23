@@ -7,6 +7,8 @@ type IdTokenPayload struct {
 	Iss      string `json:"iss"`
 	Sub      string `json:"sub"`
 	Aud      string `json:"aud"`
-	Iat      int    `json:"iat"`
-	Exp      int    `json:"exp"`
+	// Issued At
+	Iat int `json:"iat"`
+	// Expiration Time
+	Exp int `json:"exp"`
 }
