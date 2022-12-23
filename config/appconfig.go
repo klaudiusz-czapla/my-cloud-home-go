@@ -10,6 +10,7 @@ type AppConfig struct {
 	ClientSecret string `json:"clientSecret"`
 	Username     string `json:"username"`
 	Password     string `json:"password"`
+	DeviceName   string `json:"deviceName"`
 }
 
 func NewAppConfigFromViper(v *viper.Viper) (*AppConfig, error) {

@@ -41,10 +41,8 @@ From dev perspective
     ```
     source ~/.profile
     ```
-    or /etc/profile (for a system-wide installation)
 
 - delve debugger installed
-- gopls
 - linters
     ```
     go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.50.1
@@ -63,6 +61,11 @@ From runtime perspective
 - https://github.com/spf13/viper
 
 ## How to
+- Get token and save it for later usage
+    ```
+    ./my-cloud-home-go token --to=./token
+    ```
+
 - Refresh the token
     ```
     ./my-cloud-home-go token --to="./token"
@@ -70,4 +73,9 @@ From runtime perspective
     ./my-cloud-home-go refresh-token --token=$(echo $token)
     # or
     ./my-cloud-home-go refresh-token --from=./token
+    ```
+
+- Get device info
+    ```
+    ./my-cloud-home-go device-info --from=./token
     ```

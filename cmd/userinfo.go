@@ -13,7 +13,8 @@ import (
 const userInfoCmdName = "user-info"
 
 const (
-	userInfoCmdFromFlag = "from"
+	userInfoCmdFromFlag    = "from"
+	userInfoByUserNameFlag = "byUserName"
 )
 
 func InitUserInfoCommand(v *viper.Viper) *cobra.Command {
@@ -33,18 +34,26 @@ func InitUserInfoCommand(v *viper.Viper) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 
 			var tokenFilePath = v.GetString(userInfoCmdName + "." + userInfoCmdFromFlag)
+			var byUserName = v.GetBool(userInfoCmdName + "." + userInfoByUserNameFlag)
 
 			proxy, err := mch.CreateProxyForToken(ac, tokenFilePath, "")
 			if err != nil {
 				log.Fatal(err.Error())
 			}
 
-			userInfo, err := proxy.GetUserInfo()
-			if err != nil {
-				log.Fatal(err.Error())
+			if byUserName {
+				userInfo, err := proxy.GetUserInfoByUserName(ac.Username)
+				if err != nil {
+					log.Fatal(err.Error())
+				}
+				fmt.Print(userInfo)
+			} else {
+				userInfo, err := proxy.GetUserInfo()
+				if err != nil {
+					log.Fatal(err.Error())
+				}
+				fmt.Print(userInfo)
 			}
-
-			fmt.Print(userInfo)
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
 			log.Printf("command '%s' has been executed..", userInfoCmdName)
@@ -52,8 +61,10 @@ func InitUserInfoCommand(v *viper.Viper) *cobra.Command {
 	}
 
 	userInfoCmd.Flags().String(userInfoCmdFromFlag, "", "Token file")
+	userInfoCmd.Flags().Bool(userInfoByUserNameFlag, false, "By user name")
 
 	v.BindPFlag(userInfoCmdName+"."+userInfoCmdFromFlag, userInfoCmd.Flags().Lookup(userInfoCmdFromFlag))
+	v.BindPFlag(userInfoCmdName+"."+userInfoByUserNameFlag, userInfoCmd.Flags().Lookup(userInfoByUserNameFlag))
 
 	return userInfoCmd
 }

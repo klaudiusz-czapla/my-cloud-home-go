@@ -7,7 +7,7 @@ import (
 	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
 )
 
-func TestDeviceInfoByUser(t *testing.T) {
+func TestGetDeviceInfoByUser(t *testing.T) {
 
 	jsonFilePath, _ := filepath.Abs("../config.json")
 

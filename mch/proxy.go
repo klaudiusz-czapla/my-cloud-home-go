@@ -34,8 +34,8 @@ func NewProxyFromConfig(config *serde.MchConfig, token *serde.MchToken) *MchProx
 	proxy.Session = &MchSession{}
 	proxy.Session.Config = config
 	proxy.Session.Token = token
-	// will be set after being authenticated..
-	proxy.Session.UserId = "<unknown>"
+	_, _, idTokenPayload, _ := DecodeIdToken(token.IdToken)
+	proxy.Session.UserId = idTokenPayload.Sub
 	return &proxy
 }
 

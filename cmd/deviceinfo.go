@@ -48,7 +48,7 @@ func InitDeviceInfoCommand(v *viper.Viper) *cobra.Command {
 			fmt.Print(deviceInfo)
 		},
 		PostRun: func(cmd *cobra.Command, args []string) {
-			log.Printf("command '%s' has been executed..", userInfoCmdName)
+			log.Printf("command '%s' has been executed..", deviceInfoCmdName)
 		},
 	}
 

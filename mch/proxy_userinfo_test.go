@@ -7,7 +7,7 @@ import (
 	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
 )
 
-func TestUserInfo(t *testing.T) {
+func TestGetUserInfo(t *testing.T) {
 
 	jsonFilePath, _ := filepath.Abs("../config.json")
 
@@ -31,7 +31,7 @@ func TestUserInfo(t *testing.T) {
 	}
 }
 
-func TestUserInfoForUser(t *testing.T) {
+func TestGetUserInfoByUserName(t *testing.T) {
 
 	jsonFilePath, _ := filepath.Abs("../config.json")
 
