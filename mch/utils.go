@@ -9,12 +9,12 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-func DecodeIdToken(tokenString string) (*jwt.MapClaims, *serde.IdTokenPayload, error) {
+func DecodeIdToken(tokenString string) (*jwt.MapClaims, string, *serde.IdTokenPayload, error) {
 	claims := jwt.MapClaims{}
 	_, _, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
 
 	if err != nil {
-		return nil, nil, err
+		return nil, "", nil, err
 	}
 
 	// if !token.Valid {
@@ -22,24 +22,23 @@ func DecodeIdToken(tokenString string) (*jwt.MapClaims, *serde.IdTokenPayload, e
 	// }
 
 	if err := claims.Valid(); err != nil {
-		return nil, nil, fmt.Errorf("claims inside the token are not valid")
+		return nil, "", nil, fmt.Errorf("claims inside the token are not valid")
 	}
 
 	var idTokenPayload = serde.IdTokenPayload{}
 	mapstructure.Decode(claims, &idTokenPayload)
 
 	json, _ := utils.ToJson(&idTokenPayload)
-	fmt.Print(json)
 
-	return &claims, &idTokenPayload, nil
+	return &claims, json, &idTokenPayload, nil
 }
 
-func DecodeAccessToken(tokenString string) (*jwt.MapClaims, *serde.AccessTokenPayload, error) {
+func DecodeAccessToken(tokenString string) (*jwt.MapClaims, string, *serde.AccessTokenPayload, error) {
 	claims := jwt.MapClaims{}
 	_, _, err := new(jwt.Parser).ParseUnverified(tokenString, &claims)
 
 	if err != nil {
-		return nil, nil, err
+		return nil, "", nil, err
 	}
 
 	// if !token.Valid {
@@ -47,7 +46,7 @@ func DecodeAccessToken(tokenString string) (*jwt.MapClaims, *serde.AccessTokenPa
 	// }
 
 	if err := claims.Valid(); err != nil {
-		return nil, nil, fmt.Errorf("claims inside the token are not valid")
+		return nil, "", nil, fmt.Errorf("claims inside the token are not valid")
 	}
 
 	var accTokenPayload = serde.AccessTokenPayload{}
@@ -56,5 +55,5 @@ func DecodeAccessToken(tokenString string) (*jwt.MapClaims, *serde.AccessTokenPa
 	json, _ := utils.ToJson(&accTokenPayload)
 	fmt.Print(json)
 
-	return &claims, &accTokenPayload, nil
+	return &claims, json, &accTokenPayload, nil
 }

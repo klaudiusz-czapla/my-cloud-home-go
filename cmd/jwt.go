@@ -71,13 +71,13 @@ func InitJwtCommand(v *viper.Viper, parent *cobra.Command) *cobra.Command {
 			}
 
 			if v.GetBool(buildFlagName(jwtCmdDecodeIdTokenFlag)) {
-				claims, _, _ := mch.DecodeIdToken(proxy.Session.Token.IdToken)
-				fmt.Print(claims)
+				_, json, _, _ := mch.DecodeIdToken(proxy.Session.Token.IdToken)
+				fmt.Print(json)
 			}
 
 			if v.GetBool(buildFlagName(jwtCmdDecodeAccessTokenFlag)) {
-				claims, _, _ := mch.DecodeAccessToken(proxy.Session.Token.AccessToken)
-				fmt.Print(claims)
+				_, json, _, _ := mch.DecodeAccessToken(proxy.Session.Token.AccessToken)
+				fmt.Print(json)
 			}
 
 		},

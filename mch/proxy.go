@@ -125,7 +125,7 @@ func Login(clientId string, clientSecret string, username string, password strin
 		Token:  &token,
 	}
 
-	_, idTokenPayload, err := DecodeIdToken(token.IdToken)
+	_, _, idTokenPayload, err := DecodeIdToken(token.IdToken)
 	if err != nil {
 		return nil, err
 	}
