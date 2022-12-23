@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -31,12 +32,12 @@ func InitTokenCommand(v *viper.Viper) *cobra.Command {
 		Long:             ``,
 		TraverseChildren: true,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
-			proxy, err := CreateProxyForAppConfig(ac)
+			proxy, err := mch.CreateProxyForAppConfig(ac)
 			if err != nil {
 				log.Fatal(err.Error())
 			}
 
-			cmd.SetContext(context.WithValue(cmd.Context(), contextProxyKey, proxy))
+			cmd.SetContext(context.WithValue(cmd.Context(), ContextProxyKey, proxy))
 		},
 		PreRun: func(cmd *cobra.Command, args []string) {
 			log.Printf("executing '%s' command..", tokenCmdName)

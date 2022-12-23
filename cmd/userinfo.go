@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -33,7 +34,7 @@ func InitUserInfoCommand(v *viper.Viper) *cobra.Command {
 
 			var tokenFilePath = v.GetString(userInfoCmdName + "." + userInfoCmdFromFlag)
 
-			proxy, err := CreateProxyForToken(ac, tokenFilePath, "")
+			proxy, err := mch.CreateProxyForToken(ac, tokenFilePath, "")
 			if err != nil {
 				log.Fatal(err.Error())
 			}

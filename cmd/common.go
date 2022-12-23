@@ -2,23 +2,17 @@ package cmd
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"log"
-	"strings"
 
-	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch"
-	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
-	cmd "github.com/spf13/cobra"
 )
 
 type ContextKey string
 
-const contextProxyKey = ContextKey("proxy")
+const ContextProxyKey = ContextKey("proxy")
 
 func GetProxyFromContext(context context.Context) (*mch.MchProxy, error) {
-	contextProxyValue := context.Value(contextProxyKey)
+	contextProxyValue := context.Value(ContextProxyKey)
 
 	if contextProxyValue != nil {
 		proxy, ok := contextProxyValue.(*mch.MchProxy)
@@ -30,52 +24,4 @@ func GetProxyFromContext(context context.Context) (*mch.MchProxy, error) {
 	}
 
 	return nil, nil
-}
-
-func CreateProxyForAppConfig(ac *config.AppConfig) (*mch.MchProxy, error) {
-	p, err := mch.Login(ac.ClientId, ac.ClientSecret, ac.Username, ac.Password)
-	if err != nil {
-		return nil, err
-	}
-
-	return p, nil
-}
-
-func GetOrCreateProxy(cmd *cmd.Command, ac *config.AppConfig) (*mch.MchProxy, error) {
-	proxy, err := GetProxyFromContext(cmd.Context())
-
-	if proxy != nil {
-		return proxy, nil
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return CreateProxyForAppConfig(ac)
-}
-
-func CreateProxyForToken(ac *config.AppConfig, tokenFilePath string, token string) (*mch.MchProxy, error) {
-
-	var tokenString = ""
-
-	if tokenFilePath != "" {
-		t, err := utils.ReadAllText(tokenFilePath)
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		tokenString = t
-	} else if token != "" {
-		tokenString = token
-	} else {
-		log.Fatalf("token file path and token cannot be both empty. Either the first one or the second parameter has to be set to some non-empty value")
-	}
-
-	var mt models.MchToken
-	err := json.NewDecoder(strings.NewReader(tokenString)).Decode(&mt)
-	if err != nil {
-		return nil, err
-	}
-
-	return mch.NewProxy(&mt)
 }

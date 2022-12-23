@@ -5,10 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"strings"
 
+	"github.com/klaudiusz-czapla/my-cloud-home-go/config"
 	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/serde"
-	"github.com/klaudiusz-czapla/my-cloud-home-go/mch/utils"
+	"github.com/klaudiusz-czapla/my-cloud-home-go/utils"
 )
 
 type MchProxy struct {
@@ -16,8 +19,42 @@ type MchProxy struct {
 	Session    *MchSession
 }
 
+func CreateProxyForAppConfig(ac *config.AppConfig) (*MchProxy, error) {
+	p, err := Login(ac.ClientId, ac.ClientSecret, ac.Username, ac.Password)
+	if err != nil {
+		return nil, err
+	}
+
+	return p, nil
+}
+
+func CreateProxyForToken(ac *config.AppConfig, tokenFilePath string, token string) (*MchProxy, error) {
+
+	var tokenString = ""
+
+	if tokenFilePath != "" {
+		t, err := utils.ReadAllText(tokenFilePath)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		tokenString = t
+	} else if token != "" {
+		tokenString = token
+	} else {
+		log.Fatalf("token file path and token cannot be both empty. Either the first one or the second parameter has to be set to some non-empty value")
+	}
+
+	var mt serde.MchToken
+	err := json.NewDecoder(strings.NewReader(tokenString)).Decode(&mt)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewProxy(&mt)
+}
+
 func Login(clientId string, clientSecret string, username string, password string) (*MchProxy, error) {
-	config, err := serde.GetConfiguration()
+	config, err := GetConfiguration()
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +93,7 @@ func Login(clientId string, clientSecret string, username string, password strin
 		return &MchProxy{Session: &MchSession{Config: config}}, fmt.Errorf("invalid status code %d has been received from %s", res.StatusCode, res.Request.URL)
 	}
 
-	var token models.MchToken
+	var token serde.MchToken
 	err = json.NewDecoder(res.Body).Decode(&token)
 
 	if err != nil {
@@ -68,7 +105,7 @@ func Login(clientId string, clientSecret string, username string, password strin
 		Token:  &token,
 	}
 
-	_, idTokenPayload, err := utils.DecodeIdToken(token.IdToken)
+	_, idTokenPayload, err := DecodeIdToken(token.IdToken)
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +118,8 @@ func Login(clientId string, clientSecret string, username string, password strin
 	}, nil
 }
 
-func NewProxy(token *models.MchToken) (*MchProxy, error) {
-	config, err := models.GetConfiguration()
+func NewProxy(token *serde.MchToken) (*MchProxy, error) {
+	config, err := GetConfiguration()
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +127,7 @@ func NewProxy(token *models.MchToken) (*MchProxy, error) {
 	return NewProxyFromConfig(config, token), nil
 }
 
-func NewProxyFromConfig(config *models.MchConfig, token *models.MchToken) *MchProxy {
+func NewProxyFromConfig(config *serde.MchConfig, token *serde.MchToken) *MchProxy {
 	var proxy = MchProxy{}
 	proxy.HttpClient = &http.Client{}
 	proxy.Session = &MchSession{}
@@ -137,7 +174,7 @@ func (mp *MchProxy) Relogin(clientId string, clientSecret string) error {
 	fmt.Print(string(b))
 	res.Body = io.NopCloser(bytes.NewBuffer(b))
 
-	var token models.MchToken
+	var token serde.MchToken
 	err = json.NewDecoder(res.Body).Decode(&token)
 	if err != nil {
 		return err
