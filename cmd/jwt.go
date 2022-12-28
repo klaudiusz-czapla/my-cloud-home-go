@@ -21,7 +21,7 @@ const (
 
 // jwt command can be subcommand for token (parent) command
 // at the same time it can be standalone command - in that case all input parameters will be processed directly here
-// instead of relying on getting context with expected value from parent command
+// instead of relying on getting context from parent command
 func InitJwtCommand(v *viper.Viper, parent *cobra.Command) *cobra.Command {
 
 	buildFlagName := func(f string) string {

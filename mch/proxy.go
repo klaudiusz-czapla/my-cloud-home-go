@@ -34,7 +34,10 @@ func NewProxyFromConfig(config *serde.MchConfig, token *serde.MchToken) *MchProx
 	proxy.Session = &MchSession{}
 	proxy.Session.Config = config
 	proxy.Session.Token = token
-	_, _, idTokenPayload, _ := DecodeIdToken(token.IdToken)
+	_, _, idTokenPayload, err := DecodeIdToken(token.IdToken)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	proxy.Session.UserId = idTokenPayload.Sub
 	return &proxy
 }
